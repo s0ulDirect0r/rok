@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
 
   /* Print version and exit information */
   puts("Rok Version 0.0.0.0.1");
+  puts("Let's Rok, Motherfuckers!!");
   puts("Press Ctrl-C to Exit\n");
 
   /* In a never ending loop */
@@ -40,7 +41,7 @@ int main(int argc, char** argv) {
     add_history(input);
 
     /* Echo input back to user */
-    printf("No you're a %s\n", input);
+    printf("Get you some %s\n", input);
 
     /* Free retrieved input */
     free(input);
