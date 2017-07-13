@@ -1,0 +1,9 @@
+The Rok Programming Language Specification:
+
+This is a reference manual for the Rok programming language (Get you some).
+
+Rok is a badass language for badass motherfuckers who do and code what they want. 
+
+
+Packages:
+Packages/libraries written in Rok, shall henceforth be known as 'Boulders' until I change my mind or think of something funnier.
