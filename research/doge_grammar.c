@@ -8,9 +8,11 @@ int main(int argc, char** argc) {
     mpca_lang(MPCA_LANG_DEFAULT,
       "                                           \
         adjective : \"wow\" | \"many\"            \
-                  | \"so\"  | \"such\";           \
+                  | \"so\"  | \"such\"            \
+                  | \"much\" | \"awesome\";       \
         noun      : \"lisp\" | \"language\"       \
-                  | \"book\" | \"build\" | \"c\"; \
+                  | \"book\" | \"build\" | \"c\"  \
+                  | \"grammar\" | \"parser\";     \
         phrase    : <adjective> <noun>;           \
         doge      : <phrase>*;                    \
       ",
