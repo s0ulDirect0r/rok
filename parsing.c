@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
   /* Define them with the following Language */
   mpca_lang(MPCA_LANG_DEFAULT,
     " number   : /-?[0-9]+/ ;                            "
-    " operator : '+' | '-' | '*' | '/' ;                 "
+    " operator : '+' | '-' | '*' | '/' | '%' ;           "
     " expr     : <number> | '(' <operator> <expr>+ ')' ; "
     " rok      : /^/ <operator> <expr>+ /$/ ;            ",
     Number, Operator, Expr, Rok);
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     /* Free retrieved input */
     free(input);
   }
-  
+
   /* Undefine and Delete our Parsers */
   mpc_cleanup(4, Number, Operator, Expr, Rok);
   return 0;
