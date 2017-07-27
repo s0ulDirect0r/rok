@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "mpc.h"
 
 /* If we are compiling on Windows compile these functions */
@@ -33,6 +34,7 @@ long eval_op(long value1, char* op, long value2) {
   if(strcmp(op, "*") == 0) { return value1 * value2; }
   if(strcmp(op, "/") == 0) { return value1 / value2; }
   if(strcmp(op, "%") == 0) { return value1 % value2; }
+  if(strcmp(op, "^") == 0) { return (long)pow(value1, value2); }
   return 0;
 }
 
@@ -68,13 +70,13 @@ int main(int argc, char** argv) {
   /* Define them with the following Language */
   mpca_lang(MPCA_LANG_DEFAULT,
     " number   : /[+-]?([0-9]*[.])?[0-9]+/ ;             "
-    " operator : '+' | '-' | '*' | '/' | '%' ;           "
+    " operator : '+' | '-' | '*' | '/' | '%' | '^' ;     "
     " expr     : <number> | '(' <operator> <expr>+ ')' ; "
     " rok      : /^/ <operator> <expr>+ /$/ ;            ",
     Number, Operator, Expr, Rok);
 
   /* Print version and exit information */
-  puts("Rok Version 0.0.0.0.2");
+  puts("Rok Version 0.0.0.0.3");
   puts("Let's Rok, Motherfuckers!!");
   puts("Press Ctrl-C to Exit\n");
 
