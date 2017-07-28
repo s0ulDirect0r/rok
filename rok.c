@@ -27,6 +27,13 @@ void add_history(char* unused) {}
 #include <editline/readline.h>
 #endif
 
+/* Declare new lval struct */
+typedef struct {
+  int type;
+  long num;
+  int err;
+} lval;
+
 /* Use operator string to see which operation to perform */
 long eval_op(long value1, char* op, long value2) {
   if(strcmp(op, "+") == 0) { return value1 + value2; }
