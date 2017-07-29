@@ -34,6 +34,12 @@ typedef struct {
   int err;
 } lval;
 
+/* Declare Enumerations for lval types */
+enum { LVAL_NUM, LVAL_ERR };
+
+/* Enums for Errors */
+enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
+
 /* Use operator string to see which operation to perform */
 long eval_op(long value1, char* op, long value2) {
   if(strcmp(op, "+") == 0) { return value1 + value2; }
