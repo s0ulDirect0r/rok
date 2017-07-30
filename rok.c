@@ -40,6 +40,21 @@ enum { LVAL_NUM, LVAL_ERR };
 /* Enums for Errors */
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
+/** Lval functions **/
+lval lval_num(long x) {
+  lval v;
+  v.type = LVAL_NUM;
+  v.num = x;
+  return v;
+}
+
+lval lval_err(int x) {
+  lval v;
+  v.type = LVAL_ERR;
+  v.err = x;
+  return v;
+}
+
 /* Use operator string to see which operation to perform */
 long eval_op(long value1, char* op, long value2) {
   if(strcmp(op, "+") == 0) { return value1 + value2; }
