@@ -80,14 +80,21 @@ void lval_print(lval v) {
 void lval_println(lval v) { lval_print(v); putchar('\n'); }
 
 /* Use operator string to see which operation to perform */
-long eval_op(long value1, char* op, long value2) {
-  if(strcmp(op, "+") == 0) { return value1 + value2; }
-  if(strcmp(op, "-") == 0) { return value1 - value2; }
-  if(strcmp(op, "*") == 0) { return value1 * value2; }
-  if(strcmp(op, "/") == 0) { return value1 / value2; }
-  if(strcmp(op, "%") == 0) { return value1 % value2; }
-  if(strcmp(op, "^") == 0) { return (long)pow(value1, value2); }
-  return 0;
+lval eval_op(lval value1, char* op, lval value2) {
+  /* If either value is an error return */
+  if(value1.type == LVAL_ERR) { return value1; }
+  if(value2.type == LVAL_ERR) { return value2; }
+  if(strcmp(op, "+") == 0) { return lval_num(value1.num + value2.num); }
+  if(strcmp(op, "-") == 0) { return lval_num(value1.num - value2.num); }
+  if(strcmp(op, "*") == 0) { return lval_num(value1.num * value2.num); }
+  if(strcmp(op, "/") == 0) {
+    return value2.num == 0
+      ? lval_err(LERR_DIV_ZERO)
+      : lval_num(value1.num / value2.num);
+  }
+  if(strcmp(op, "%") == 0) { return lval_num(value1.num % value2.num); }
+  if(strcmp(op, "^") == 0) { return lval_num((long)pow(value1.num, value2.num)); }
+  return lval_err(LERR_BAD_OP);
 }
 
 long eval(mpc_ast_t* t) {
