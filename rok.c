@@ -97,17 +97,19 @@ lval eval_op(lval value1, char* op, lval value2) {
   return lval_err(LERR_BAD_OP);
 }
 
-long eval(mpc_ast_t* t) {
+lval eval(mpc_ast_t* t) {
   /* if tagged as number return it directly. */
   if (strstr(t->tag, "number")) {
-    return atoi(t->contents);
+    errno = 0;
+    long x = strtol(t->contents, NULL, 10)
+    return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
 
   /* the operator is always second child */
   char* op = t->children[1]->contents;
 
   /* We store the third child in x */
-  long x = eval(t->children[2]);
+  lval x = eval(t->children[2]);
 
   /* Iterate the remaining children and combining */
   int i = 3;
