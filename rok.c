@@ -35,10 +35,10 @@ typedef struct {
 } lval;
 
 /* Declare Enumerations for lval types */
-enum { LVAL_NUM, LVAL_ERR };
+enum lval_types { LVAL_NUM, LVAL_ERR };
 
 /* Enums for Errors */
-enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
+enum error_types { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
 /** Lval functions **/
 lval lval_num(long x) {
