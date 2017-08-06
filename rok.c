@@ -28,17 +28,20 @@ void add_history(char* unused) {}
 #endif
 
 /* Declare new lval struct */
-typedef struct {
+typedef struct lval {
   int type;
   long num;
-  int err;
+  char* err;
+  char* sym;
+  int count;
+  struct lval** cell;
 } lval;
 
 /* Declare Enumerations for lval types */
-enum lval_types { LVAL_NUM, LVAL_ERR };
+enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR };
 
 /* Enums for Errors */
-enum error_types { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
+// enum error_types { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
 /** Lval functions **/
 lval lval_num(long x) {
