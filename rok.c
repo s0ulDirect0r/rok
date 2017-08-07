@@ -44,17 +44,18 @@ enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR };
 // enum error_types { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
 /** Lval functions **/
-lval lval_num(long x) {
-  lval v;
-  v.type = LVAL_NUM;
-  v.num = x;
+lval* lval_num(long x) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_NUM;
+  v->num = x;
   return v;
 }
 
-lval lval_err(int x) {
-  lval v;
-  v.type = LVAL_ERR;
-  v.err = x;
+lval* lval_err(char* m) {
+  lval* v = malloc(sizeof(lval) );
+  v->type = LVAL_ERR;
+  v->err = malloc(strlen(m) + 1);
+  strcopy(v->err, m);
   return v;
 }
 
