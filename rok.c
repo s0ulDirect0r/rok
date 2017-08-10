@@ -41,7 +41,7 @@ typedef struct lval {
 enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR };
 
 /* Enums for Errors */
-// enum error_types { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
+enum error_types { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
 /** Lval functions **/
 lval* lval_num(long x) {
@@ -55,7 +55,7 @@ lval* lval_err(char* m) {
   lval* v = malloc(sizeof(lval));
   v->type = LVAL_ERR;
   v->err = malloc(strlen(m) + 1);
-  strcopy(v->err, m);
+  strcpy(v->err, m);
   return v;
 }
 
@@ -63,7 +63,7 @@ lval* lval_sym(char* sym) {
   lval* v = malloc(sizeof(lval));
   v->type = LVAL_SYM;
   v->sym = malloc(strlen(sym) + 1);
-  strcopy(v->sym, sym);
+  strcpy(v->sym, sym);
   return v;
 }
 
@@ -87,7 +87,7 @@ void lval_del(lval* v) {
     /* If sexpr then delete all elements inside */
     case LVAL_SEXPR:
       for (int i = 0; i < v->count; i++) {
-        lval_del(v->cell[i])
+        lval_del(v->cell[i]);
       }
 
       /* Free memory allocated to store pointers */
@@ -96,6 +96,41 @@ void lval_del(lval* v) {
   }
   /* Free memory allocated for the lval struct itself */
   free(v);
+}
+
+lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
+  long x = strtol(t->contents, NULL, 10);
+  return errno != ERANGE ?
+    lval_num(x) : lval_err("invalid number");
+}
+
+lval* lval_read(mpc_ast_t* t) {
+  /* If symbol or number return conversion to that type */
+  if (strstr(t->tag, "number")) { return lval_read_num(t); }
+  if (strstr(t->tag, "symbol")) { return lval_sym(t->contents); }
+
+  /* If root (>) or sexpr then create empty list */
+  lval* x = NULL;
+  if (strcmp(t->tag, ">") == 0) { return lval_sexpr(); }
+  if (strstr(t->tag, "sexpr"))  { return lval_sexpr(); }
+
+  /* Fill this list with any valid expression contained within */
+  for (int i = 0; i < t->children_num; i++) {
+    if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
+    if (strcmp(t->children[i]->tag,  "regex") == 0) { continue; }
+    x = lval_add(x, lval_read(t->children[i]));
+  }
+
+  return x;
+}
+
+lval* lval_add(lval* v, lval* x) {
+  v->count++;
+  v->cell = realloc(v->cell, sizeof(lval*) * v->count);
+  v->cell[v->count-1] = x;
+  return v;
 }
 
 void lval_print(lval v) {
