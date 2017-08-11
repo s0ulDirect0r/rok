@@ -133,29 +133,34 @@ lval* lval_add(lval* v, lval* x) {
   return v;
 }
 
-void lval_print(lval v) {
-  switch(v.type) {
+void lval_expr_print(lval* v, char open, char close) {
+  putchar(open);
+  for (int i = 0; i < v->count; i++) {
+    /* Print value contained within */
+    lval_print(v->cell[i]);
+
+    /* Don't print trailing space if last element */
+    if (i != (v->count-1)) {
+      putchar(' ');
+    }
+  }
+  putchar(close);
+}
+
+void lval_print(lval* v) {
+  switch(v->type) {
     /* In the case the type is a number print it */
     /* Then break out of the switch */
-    case LVAL_NUM: printf("%li", v.num); break;
-
-    /* In the case the type is an error */
-    case LVAL_ERR:
-      if(v.err == LERR_DIV_ZERO) {
-        printf("Error: Division By Zero!");
-      }
-      if(v.err == LERR_BAD_OP) {
-        printf("Error: Invalid Operator!");
-      }
-      if(v.err == LERR_BAD_NUM) {
-        printf("Error: Invalid Number!");
-      }
+    case LVAL_NUM: printf("%li", v->num); break;
+    case LVAL_ERR: printf("Error: %s", v->err); break;
+    case LVAL_SYM: printf("%s", v->sym); break;
+    case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
     break;
   }
 }
 
 /* Print an "lval" followed by a newline */
-void lval_println(lval v) { lval_print(v); putchar('\n'); }
+void lval_println(lval* v) { lval_print(v); putchar('\n'); }
 
 /* Use operator string to see which operation to perform */
 lval eval_op(lval value1, char* op, lval value2) {
@@ -233,8 +238,9 @@ int main(int argc, char** argv) {
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Rok, &r)) {
       /* On Success Print the AST */
-      lval result = eval(r.output);
-      lval_println(result);
+      lval* x = lval_read(r.output);
+      lval_println(x);
+      lval_del(x);
       mpc_ast_delete(r.output);
     } else {
       /* Otherwise print the error */
