@@ -40,9 +40,6 @@ typedef struct lval {
 /* Declare Enumerations for lval types */
 enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR };
 
-/* Enums for Errors */
-enum error_types { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
-
 /** Lval functions **/
 lval* lval_num(long x) {
   lval* v = malloc(sizeof(lval));
@@ -72,6 +69,13 @@ lval* lval_sexpr(void) {
   v->type = LVAL_SEXPR;
   v->count = 0;
   v->cell = NULL;
+  return v;
+}
+
+lval* lval_add(lval* v, lval* x) {
+  v->count++;
+  v->cell = realloc(v->cell, sizeof(lval*) * v->count);
+  v->cell[v->count-1] = x;
   return v;
 }
 
@@ -126,12 +130,7 @@ lval* lval_read(mpc_ast_t* t) {
   return x;
 }
 
-lval* lval_add(lval* v, lval* x) {
-  v->count++;
-  v->cell = realloc(v->cell, sizeof(lval*) * v->count);
-  v->cell[v->count-1] = x;
-  return v;
-}
+void lval_print(lval* v);
 
 void lval_expr_print(lval* v, char open, char close) {
   putchar(open);
@@ -161,48 +160,6 @@ void lval_print(lval* v) {
 
 /* Print an "lval" followed by a newline */
 void lval_println(lval* v) { lval_print(v); putchar('\n'); }
-
-/* Use operator string to see which operation to perform */
-lval eval_op(lval value1, char* op, lval value2) {
-  /* If either value is an error return */
-  if(value1.type == LVAL_ERR) { return value1; }
-  if(value2.type == LVAL_ERR) { return value2; }
-  if(strcmp(op, "+") == 0) { return lval_num(value1.num + value2.num); }
-  if(strcmp(op, "-") == 0) { return lval_num(value1.num - value2.num); }
-  if(strcmp(op, "*") == 0) { return lval_num(value1.num * value2.num); }
-  if(strcmp(op, "/") == 0) {
-    return value2.num == 0
-      ? lval_err(LERR_DIV_ZERO)
-      : lval_num(value1.num / value2.num);
-  }
-  if(strcmp(op, "%") == 0) { return lval_num(value1.num % value2.num); }
-  if(strcmp(op, "^") == 0) { return lval_num((long)pow(value1.num, value2.num)); }
-  return lval_err(LERR_BAD_OP);
-}
-
-lval eval(mpc_ast_t* t) {
-  /* if tagged as number return it directly. */
-  if (strstr(t->tag, "number")) {
-    errno = 0;
-    long x = strtol(t->contents, NULL, 10);
-    return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
-  }
-
-  /* the operator is always second child */
-  char* op = t->children[1]->contents;
-
-  /* We store the third child in x */
-  lval x = eval(t->children[2]);
-
-  /* Iterate the remaining children and combining */
-  int i = 3;
-  while(strstr(t->children[i]->tag, "expr")) {
-    x = eval_op(x, op, eval(t->children[i]));
-    i++;
-  }
-
-  return x;
-}
 
 int main(int argc, char** argv) {
   /* Create some parsers */
