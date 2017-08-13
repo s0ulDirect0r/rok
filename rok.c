@@ -116,8 +116,8 @@ lval* lval_read(mpc_ast_t* t) {
 
   /* If root (>) or sexpr then create empty list */
   lval* x = NULL;
-  if (strcmp(t->tag, ">") == 0) { return lval_sexpr(); }
-  if (strstr(t->tag, "sexpr"))  { return lval_sexpr(); }
+  if (strcmp(t->tag, ">") == 0) { x = lval_sexpr(); }
+  if (strstr(t->tag, "sexpr"))  { x = lval_sexpr(); }
 
   /* Fill this list with any valid expression contained within */
   for (int i = 0; i < t->children_num; i++) {
