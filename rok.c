@@ -158,6 +158,22 @@ void lval_print(lval* v) {
   }
 }
 
+lval* lval_eval_sexpr(lval* v) {
+
+  /* Evaluate Children */
+  for (int i = 0; i < v->count; i++) {
+    v->cell[i] = lval_eval(v->cell[i]);
+  }
+
+  /* TO DO:
+    ADD ERROR CHECKING
+    EMPTY EXPRESSIONS
+    SINGLE EXPRESSIONS
+    ENSURE SYMBOL type
+    CALL BUILTIN WITH OPERATOR
+    */
+}
+
 /* Print an "lval" followed by a newline */
 void lval_println(lval* v) { lval_print(v); putchar('\n'); }
 
