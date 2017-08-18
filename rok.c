@@ -158,6 +158,29 @@ void lval_print(lval* v) {
   }
 }
 
+lval* lval_pop(lval* v, int i) {
+  /* Find the item at i */
+  lval* x = v->cell[i];
+
+  /* Shift memory after the item at "i" over the top */
+  /* WTF is memmove? */
+  memmove(&v->cell[i], &v->cell[i+1],
+    sizeof(lval*) * (v->count-i-1));
+
+  /* Decrease the count of items in the list */
+  v->count--;
+
+  /* Reallocate the memory used */
+  v->cell = realloc(v->cell, sizeof(lval*) * v->count);
+  return x;
+}
+
+lval* lval_take(lval* v, int i) {
+  lval* x = lval_pop(v, i);
+  lval_del(v);
+  return x;
+}
+
 lval* builtin_op(lval* a, char* op) {
   /* Ensure all arguments are numbers */
   for (int i = 0; i < a->count; i++) {
