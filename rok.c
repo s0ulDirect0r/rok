@@ -158,6 +158,24 @@ void lval_print(lval* v) {
   }
 }
 
+lval* builtin_op(lval* a, char* op) {
+  /* Ensure all arguments are numbers */
+  for (int i = 0; i < a->count; i++) {
+    if(a->cell[i]->type != LVAL_NUM) {
+      lval_del(a);
+      return lval_err("Cannot operate on non-numbers");
+    }
+  }
+
+  /* Pop the first element */
+  lval* x = lval_pop(a, 0);
+
+  /* If no arguments and sub then perform unary negation */
+  if ((strcmp(op, "-") == 0) && a->count == 0) {
+    x->num = -x->num;
+  }
+}
+
 lval* lval_eval_sexpr(lval* v) {
 
   /* Evaluate Children */
@@ -195,6 +213,8 @@ lval* lval_eval(lval* v) {
   /* All other lval types remain the same */
   return v;
 }
+
+
 
 /* Print an "lval" followed by a newline */
 void lval_println(lval* v) { lval_print(v); putchar('\n'); }
