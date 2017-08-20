@@ -40,6 +40,10 @@ typedef struct lval {
 /* Declare Enumerations for lval types */
 enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR };
 
+/* Forward Declarations */
+void lval_print(lval* v);
+lval* lval_eval(lval* v);
+
 /** Lval functions **/
 lval* lval_num(long x) {
   lval* v = malloc(sizeof(lval));
@@ -130,7 +134,6 @@ lval* lval_read(mpc_ast_t* t) {
   return x;
 }
 
-void lval_print(lval* v);
 
 void lval_expr_print(lval* v, char open, char close) {
   putchar(open);
@@ -208,16 +211,15 @@ lval* builtin_op(lval* a, char* op) {
     if(strcmp(op, "*") == 0) { x->num *= y->num; }
     if(strcmp(op, "/") == 0) {
       if(y->num == 0) {
-        lval_del(x); lval_del(y)
+        lval_del(x); lval_del(y);
         x = lval_err("Division By Zero!"); break;
       }
       x->num /= y->num;
     }
-
     lval_del(y);
   }
 
-  lval_del(a) return x;
+  lval_del(a); return x;
 }
 
 lval* lval_eval_sexpr(lval* v) {
@@ -258,8 +260,6 @@ lval* lval_eval(lval* v) {
   return v;
 }
 
-
-
 /* Print an "lval" followed by a newline */
 void lval_println(lval* v) { lval_print(v); putchar('\n'); }
 
@@ -297,7 +297,7 @@ int main(int argc, char** argv) {
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Rok, &r)) {
       /* On Success Print the AST */
-      lval* x = lval_read(r.output);
+      lval* x = lval_eval(lval_read(r.output));
       lval_println(x);
       lval_del(x);
       mpc_ast_delete(r.output);
