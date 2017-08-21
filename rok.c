@@ -270,6 +270,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Number   = mpc_new("number");
   mpc_parser_t* Symbol   = mpc_new("symbol");
   mpc_parser_t* Sexpr    = mpc_new("sexpr");
+  mpc_parser_t* Qexpr    = mpc_new("qexpr");
   mpc_parser_t* Expr     = mpc_new("expr");
   mpc_parser_t* Rok      = mpc_new("rok");
 
@@ -278,9 +279,10 @@ int main(int argc, char** argv) {
     " number   : /[+-]?([0-9]*[.])?[0-9]+/ ;             "
     " symbol   : '+' | '-' | '*' | '/' | '%' | '^' ;     "
     " sexpr    : '(' <expr>* ')' ;                       "
+    " qexpr    : '{' <expr>* '}' ;                       "
     " expr     : <number> | <symbol> | <sexpr> ;         "
     " rok      : /^/ <expr>* /$/ ;                       ",
-    Number, Symbol, Sexpr, Expr, Rok);
+    Number, Symbol, Sexpr, Qexpr, Expr, Rok);
 
   /* Print version and exit information */
   puts("Rok Version 0.0.0.0.8");
@@ -314,6 +316,6 @@ int main(int argc, char** argv) {
   }
 
   /* Undefine and Delete our Parsers */
-  mpc_cleanup(5, Number, Symbol, Sexpr, Expr, Rok);
+  mpc_cleanup(6, Number, Symbol, Sexpr, Expr, Rok);
   return 0;
 }
