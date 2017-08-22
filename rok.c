@@ -38,7 +38,7 @@ typedef struct lval {
 } lval;
 
 /* Declare Enumerations for lval types */
-enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR };
+enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 
 /* Forward Declarations */
 void lval_print(lval* v);
@@ -76,6 +76,14 @@ lval* lval_sexpr(void) {
   return v;
 }
 
+lval* lval_qexpr(void) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_QEXPR;
+  v->count = 0;
+  v->cell = NULL;
+  return v;
+}
+
 lval* lval_add(lval* v, lval* x) {
   v->count++;
   v->cell = realloc(v->cell, sizeof(lval*) * v->count);
@@ -92,7 +100,8 @@ void lval_del(lval* v) {
     case LVAL_ERR: free(v->err); break;
     case LVAL_SYM: free(v->sym); break;
 
-    /* If sexpr then delete all elements inside */
+    /* If qexpr or sexpr then delete all elements inside */
+    case LVAL_QEXPR:
     case LVAL_SEXPR:
       for (int i = 0; i < v->count; i++) {
         lval_del(v->cell[i]);
@@ -122,11 +131,14 @@ lval* lval_read(mpc_ast_t* t) {
   lval* x = NULL;
   if (strcmp(t->tag, ">") == 0) { x = lval_sexpr(); }
   if (strstr(t->tag, "sexpr"))  { x = lval_sexpr(); }
+  if (strstr(t->tag, "qexpr"))  { x = lval_qexpr(); }
 
   /* Fill this list with any valid expression contained within */
   for (int i = 0; i < t->children_num; i++) {
     if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
     if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, "{") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, "}") == 0) { continue; }
     if (strcmp(t->children[i]->tag,  "regex") == 0) { continue; }
     x = lval_add(x, lval_read(t->children[i]));
   }
@@ -157,6 +169,7 @@ void lval_print(lval* v) {
     case LVAL_ERR: printf("Error: %s", v->err); break;
     case LVAL_SYM: printf("%s", v->sym); break;
     case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
+    case LVAL_QEXPR: lval_expr_print(v, '{', '}'); break;
     break;
   }
 }
