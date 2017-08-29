@@ -289,6 +289,13 @@ lval* builtin_eval(lval* a) {
   return lval_eval(x);
 }
 
+lval* builtin_join(lval* a) {
+  for(int i = 0; i < a->count; i++) {
+    LASSERT(a, a->cell[0]->type == LVAL_QEXPR
+      "Function 'join' passed incorrect types!");
+  }
+}
+
 lval* lval_eval_sexpr(lval* v) {
 
   /* Evaluate Children */
