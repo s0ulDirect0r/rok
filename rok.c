@@ -259,7 +259,7 @@ lval* builtin_head(lval* a) {
 
 lval* builtin_tail(lval* a) {
   /* Check Error Conditions */
-  LASSERT(a, a->count != 1, 
+  LASSERT(a, a->count != 1,
     "Function 'tail' passed too many arguments!");
   LASSERT(a, a->cell[0]->type != LVAL_QEXPR,
     "Function 'tail' passed incorrect types!");
@@ -294,6 +294,26 @@ lval* builtin_join(lval* a) {
     LASSERT(a, a->cell[0]->type == LVAL_QEXPR
       "Function 'join' passed incorrect types!");
   }
+
+  lval* x = lval_pop(a, 0);
+
+  while(a->count) {
+    x = lval_join(x, lval_pop(a, 0));
+  }
+
+  lval_del(a);
+  return x;
+}
+
+lval* lval_join(lval* x, lval* y) {
+  /* For each cell in 'y' add it to 'x' */
+  while(y->count) {
+    x = lval_add(x, lval_pop(y, 0));
+  }
+
+  /* Delete the empty y and return x */
+  lval_del(y);
+  return x;
 }
 
 lval* lval_eval_sexpr(lval* v) {
