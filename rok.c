@@ -118,6 +118,12 @@ void lval_del(lval* v) {
 #define LASSERT(args, cond, err) \
   if (!(cond)) { lval_del(args); return lval_err(err); }
 
+#define LASSERT_ARGS(args, count) \
+  if (args->count != count) { lval_del(args); return lval_err("Function passed incorrect amount of arguments!");}
+
+#define LASSERT_EMPTY(lval) \
+  if (lval->cell[0]->count == 0) { lval_del(lval); return lval_err("Function passed {}!");}
+
 lval* lval_read_num(mpc_ast_t* t) {
   errno = 0;
   long x = strtol(t->contents, NULL, 10);
@@ -255,12 +261,11 @@ lval* builtin_op(lval* a, char* op) {
 
 lval* builtin_head(lval* a) {
   /* Check Error Conditions */
-  LASSERT(a, a->count == 1,
-     "Function 'head' passed too many arguments!");
+  int count = 1;
   LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
      "Function 'head' passed incorrect types!");
-  LASSERT(a, a->cell[0]->count != 0,
-     "Function 'head' passed {}!");
+  LASSERT_EMPTY(a);
+  LASSERT_ARGS(a, count);
 
   /* Otherwise take first argument */
   lval* v = lval_take(a, 0);
