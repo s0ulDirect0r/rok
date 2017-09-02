@@ -36,7 +36,7 @@ void lval_print(lval* v);
 lval* lval_eval(lval* v);
 
 /* Declare Enumerations for lval types */
-enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
+enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN };
 
 typedef lval*(*lbuiltin)(lenv*, lval*);
 
@@ -92,6 +92,13 @@ lval* lval_qexpr(void) {
   return v;
 }
 
+lval* lval_fun(lbuiltin fun) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_FUN;
+  v->fun = func;
+  return v;
+}
+
 lval* lval_add(lval* v, lval* x) {
   v->count++;
   v->cell = realloc(v->cell, sizeof(lval*) * v->count);
@@ -107,6 +114,7 @@ void lval_del(lval* v) {
     /* For err or sym free the data */
     case LVAL_ERR: free(v->err); break;
     case LVAL_SYM: free(v->sym); break;
+    case LVAL_FUN: break;
 
     /* If qexpr or sexpr then delete all elements inside */
     case LVAL_QEXPR:
@@ -185,6 +193,7 @@ void lval_print(lval* v) {
     case LVAL_NUM: printf("%li", v->num); break;
     case LVAL_ERR: printf("Error: %s", v->err); break;
     case LVAL_SYM: printf("%s", v->sym); break;
+    case LVAL_FUN: printf("<function>"); break;
     case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
     case LVAL_QEXPR: lval_expr_print(v, '{', '}'); break;
     break;
