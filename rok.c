@@ -27,22 +27,30 @@ void add_history(char* unused) {}
 #include <editline/readline.h>
 #endif
 
-/* Declare new lval struct */
-typedef struct lval {
-  int type;
-  long num;
-  char* err;
-  char* sym;
-  int count;
-  struct lval** cell;
-} lval;
+/* Forward Declarations */
+struct lval;
+struct lenv;
+typedef struct lval lval;
+typedef struct lenv lenv;
+void lval_print(lval* v);
+lval* lval_eval(lval* v);
 
 /* Declare Enumerations for lval types */
 enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 
-/* Forward Declarations */
-void lval_print(lval* v);
-lval* lval_eval(lval* v);
+typedef lval*(*lbuiltin)(lenv*, lval*);
+
+/* Declare new lval struct */
+struct lval {
+  int type;
+  long num;
+  char* err;
+  char* sym;
+  lbuiltin fun;
+
+  int count;
+  struct lval** cell;
+};
 
 /** Lval functions **/
 lval* lval_num(long x) {
