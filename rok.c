@@ -95,7 +95,7 @@ lval* lval_qexpr(void) {
 lval* lval_fun(lbuiltin fun) {
   lval* v = malloc(sizeof(lval));
   v->type = LVAL_FUN;
-  v->fun = func;
+  v->fun = fun;
   return v;
 }
 
@@ -232,6 +232,33 @@ lval* lval_join(lval* x, lval* y) {
 
   /* Delete the empty y and return x */
   lval_del(y);
+  return x;
+}
+
+lval* lval_copy(lval* v) {
+  lval* x = malloc(sizeof(lval));
+  x->type = v->type;
+
+  switch (v->type) {
+    case LVAL_NUM: x->num = x->num; break;
+    case LVAL_FUN: x->fun = v->fun; break;
+    case LVAL_SYM:
+      x->sym = malloc(strlen(v->sym) + 1);
+      strcpy(x->sym, v->sym); break;
+    case LVAL_ERR:
+      x->err = malloc(strlen(v->err) + 1);
+      strcpy(x->err, v->err); break;
+
+    case LVAL_SEXPR:
+    case LVAL_QEXPR:
+      x->count = v->count;
+      x->cell = malloc(sizeof(lval*) * x->count);
+      for (int i = 0; i < x->count; i++) {
+        x->cell[i] = lval_copy(v->cell[i]);
+      }
+    break;
+  }
+
   return x;
 }
 
