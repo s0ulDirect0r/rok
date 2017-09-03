@@ -52,6 +52,12 @@ struct lval {
   struct lval** cell;
 };
 
+struct lenv {
+  int count;
+  char** syms;
+  lval** vals;
+};
+
 /** Lval functions **/
 lval* lval_num(long x) {
   lval* v = malloc(sizeof(lval));
@@ -260,6 +266,25 @@ lval* lval_copy(lval* v) {
   }
 
   return x;
+}
+
+/** Lenv functions **/
+lenv* lenv_new(void) {
+  lenv* e = malloc(sizeof(lenv));
+  e->count = 0;
+  e->syms = NULL;
+  e->vals = NULL;
+  return e;
+}
+
+void lenv_del(lenv* e) {
+  for(int i = 0; i < e->count; i++) {
+    free(e->syms[i]);
+    lval_del(e->vals[i]);
+  }
+  free(e->syms);
+  free(e->vals);
+  free(e);
 }
 
 
