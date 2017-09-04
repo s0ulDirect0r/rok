@@ -359,6 +359,22 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
   lval_del(a); return x;
 }
 
+lval* builtin_add(lenv* e, lval* a) {
+  return builtin_op(e, a, "+");
+}
+
+lval* builtin_sub(lenv* e, lval* a) {
+  return builtin_op(e, a, "-");
+}
+
+lval* builtin_mul(lenv* e, lval* a) {
+  return builtin_op(e, a, "*");
+}
+
+lval* builtin_div(lenv* e, lval* a) {
+  return builtin_op(e, a, "/");
+}
+
 lval* builtin_head(lenv* e, lval* a) {
   /* Check Error Conditions */
   int count = 1;
