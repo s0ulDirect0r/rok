@@ -33,7 +33,7 @@ struct lenv;
 typedef struct lval lval;
 typedef struct lenv lenv;
 void lval_print(lval* v);
-lval* lval_eval(lval* v);
+lval* lval_eval(lenv* e, lval* v);
 
 /* Declare Enumerations for lval types */
 enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN };
@@ -319,7 +319,7 @@ void lenv_put(lenv* e, lval* k, lval* v) {
 }
 
 
-lval* builtin_op(lval* a, char* op) {
+lval* builtin_op(lenv* e, lval* a, char* op) {
   /* Ensure all arguments are numbers */
   for (int i = 0; i < a->count; i++) {
     if(a->cell[i]->type != LVAL_NUM) {
@@ -359,7 +359,7 @@ lval* builtin_op(lval* a, char* op) {
   lval_del(a); return x;
 }
 
-lval* builtin_head(lval* a) {
+lval* builtin_head(lenv* e, lval* a) {
   /* Check Error Conditions */
   int count = 1;
   LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
@@ -375,7 +375,7 @@ lval* builtin_head(lval* a) {
   return v;
 }
 
-lval* builtin_tail(lval* a) {
+lval* builtin_tail(lenv* e, lval* a) {
   /* Check Error Conditions */
   LASSERT(a, a->count == 1,
     "Function 'tail' passed too many arguments!");
@@ -392,22 +392,22 @@ lval* builtin_tail(lval* a) {
   return v;
 }
 
-lval* builtin_list(lval* a) {
+lval* builtin_list(lenv* e, lval* a) {
   a->type = LVAL_QEXPR;
   return a;
 }
 
-lval* builtin_eval(lval* a) {
+lval* builtin_eval(lenv* e, lval* a) {
   LASSERT(a, a->count == 1,
     "Function 'eval' passed too many arguments!");
   LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
      "Function 'eval' passed incorrect type!");
   lval* x = lval_take(a, 0);
   x->type = LVAL_SEXPR;
-  return lval_eval(x);
+  return lval_eval(e, x);
 }
 
-lval* builtin_join(lval* a) {
+lval* builtin_join(lenv* e, lval* a) {
   for(int i = 0; i < a->count; i++) {
     LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
       "Function 'join' passed incorrect types!");
@@ -423,23 +423,23 @@ lval* builtin_join(lval* a) {
   return x;
 }
 
-lval* builtin_cons(int val, lval* a) {
+lval* builtin_cons(lenv* e, int val, lval* a) {
   return a;
 }
 
 // Return the number of elements in a Qexpression
-lval* builtin_len(lval* a) {
+lval* builtin_len(lenv* e, lval* a) {
   return lval_num(a->cell[0]->count);
 }
 
-lval* builtin(lval* a, char* func) {
-  if(strcmp("list", func) == 0) { return builtin_list(a); }
-  if(strcmp("head", func) == 0) { return builtin_head(a); }
-  if(strcmp("tail", func) == 0) { return builtin_tail(a); }
-  if(strcmp("eval", func) == 0) { return builtin_eval(a); }
-  if(strcmp("join", func) == 0) { return builtin_join(a); }
-  if(strcmp("len", func) == 0) { return builtin_len(a); }
-  if(strstr("+-/*^%", func)) { return builtin_op(a, func); }
+lval* builtin(lenv* e, lval* a, char* func) {
+  if(strcmp("list", func) == 0) { return builtin_list(e, a); }
+  if(strcmp("head", func) == 0) { return builtin_head(e, a); }
+  if(strcmp("tail", func) == 0) { return builtin_tail(e, a); }
+  if(strcmp("eval", func) == 0) { return builtin_eval(e, a); }
+  if(strcmp("join", func) == 0) { return builtin_join(e, a); }
+  if(strcmp("len", func) == 0) { return builtin_len(e, a); }
+  if(strstr("+-/*^%", func)) { return builtin_op(e, a, func); }
   lval_del(a);
   return lval_err("Unknown Function!");
 }
