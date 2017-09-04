@@ -444,11 +444,11 @@ lval* builtin(lval* a, char* func) {
   return lval_err("Unknown Function!");
 }
 
-lval* lval_eval_sexpr(lval* v) {
+lval* lval_eval_sexpr(lenv* e, lval* v) {
 
   /* Evaluate Children */
   for (int i = 0; i < v->count; i++) {
-    v->cell[i] = lval_eval(v->cell[i]);
+    v->cell[i] = lval_eval(e, v->cell[i]);
   }
 
   /* Error checking */
@@ -462,22 +462,27 @@ lval* lval_eval_sexpr(lval* v) {
   /* Single Expression */
   if (v->count == 1) { return lval_take(v, 0); }
 
-  /* Ensure First Element is Symbol */
+  /* Ensure First Element is a function after evaluation */
   lval* f = lval_pop(v, 0);
-  if (f->type != LVAL_SYM) {
+  if (f->type != LVAL_FUN) {
     lval_del(f); lval_del(v);
-    return lval_err("S-expression Does not start with symbol!");
+    return lval_err("First element is not a function!");
   }
 
-  /* Call built in operator */
-  lval* result = builtin(v, f->sym);
+  /* If so call function to get result */
+  lval* result = f->fun(e, v);
   lval_del(f);
   return result;
 }
 
-lval* lval_eval(lval* v) {
+lval* lval_eval(lenv* e, lval* v) {
+  if (v->type == LVAL_SYM) {
+    lval* x = lenv_get(e, v);
+    lval_del(v);
+    return x;
+  }
   /* Evaluate Sexpressions */
-  if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(v); }
+  if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(e, v); }
   /* All other lval types remain the same */
   return v;
 }
