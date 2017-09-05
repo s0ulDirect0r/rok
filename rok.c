@@ -333,6 +333,7 @@ void lenv_add_builtins(lenv* e) {
   lenv_add_builtin(e, "eval", builtin_eval);
   lenv_add_builtin(e, "len", builtin_len);
   lenv_add_builtin(e, "join", builtin_join);
+  
   /* Math functions */
   lenv_add_builtin(e, "+", builtin_add);
   lenv_add_builtin(e, "-", builtin_sub);
@@ -552,6 +553,9 @@ int main(int argc, char** argv) {
   puts("Let's Rok, Motherfuckers!!");
   puts("Press Ctrl-C to Exit\n");
 
+  lenv* e = lenv_new();
+  lenv_add_builtins(e);
+
   /* In a never ending loop */
   while (1) {
     /* Output our prompt and get input */
@@ -564,7 +568,7 @@ int main(int argc, char** argv) {
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Rok, &r)) {
       /* On Success Print the AST */
-      lval* x = lval_eval(lval_read(r.output));
+      lval* x = lval_eval(e, lval_read(r.output));
       lval_println(x);
       lval_del(x);
       mpc_ast_delete(r.output);
@@ -579,6 +583,7 @@ int main(int argc, char** argv) {
   }
 
   /* Undefine and Delete our Parsers */
+  lenv_del(e);
   mpc_cleanup(6, Number, Symbol, Sexpr, Expr, Rok);
   return 0;
 }
