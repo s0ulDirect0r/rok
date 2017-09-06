@@ -34,6 +34,7 @@ typedef struct lval lval;
 typedef struct lenv lenv;
 void lval_print(lval* v);
 lval* lval_eval(lenv* e, lval* v);
+void lenv_put(lenv* e, lval* v, lval* k);
 
 /* Declare Enumerations for lval types */
 enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN };
@@ -246,7 +247,7 @@ lval* lval_copy(lval* v) {
   x->type = v->type;
 
   switch (v->type) {
-    case LVAL_NUM: x->num = x->num; break;
+    case LVAL_NUM: x->num = v->num; break;
     case LVAL_FUN: x->fun = v->fun; break;
     case LVAL_SYM:
       x->sym = malloc(strlen(v->sym) + 1);
@@ -388,6 +389,33 @@ lval* builtin_join(lenv* e, lval* a) {
   return x;
 }
 
+lval* builtin_def(lenv* e, lval* a) {
+  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+    "Function 'def' passed incorrect type!");
+
+  /* First argument is symbol list */
+  lval* syms = a->cell[0];
+
+  /* Ensure all elements of first list are symbols */
+  for(int i = 0; i < syms->count; i++) {
+    LASSERT(a, syms->cell[i]->type == LVAL_SYM,
+    "Function 'def' cannot define non-symbols!");
+  }
+
+  /* Check correct number of symbols and values */
+    LASSERT(a, syms->count == a->count-1,
+    "Function 'def' cannot define incorrect "
+    "number of values to symbols.");
+
+  /* Assign copies of values to symbols */
+  for (int i = 0; i < syms->count; i++) {
+    lenv_put(e, syms->cell[i], a->cell[i+1]);
+  }
+
+  lval_del(a);
+  return lval_sexpr();
+}
+
 lval* builtin_cons(lenv* e, int val, lval* a) {
   return a;
 }
@@ -404,6 +432,7 @@ lval* builtin(lenv* e, lval* a, char* func) {
   if(strcmp("eval", func) == 0) { return builtin_eval(e, a); }
   if(strcmp("join", func) == 0) { return builtin_join(e, a); }
   if(strcmp("len", func) == 0) { return builtin_len(e, a); }
+  if(strcmp("def", func) == 0) { return builtin_def(e, a); }
   if(strstr("+-/*^%", func)) { return builtin_op(e, a, func); }
   lval_del(a);
   return lval_err("Unknown Function!");
@@ -526,6 +555,9 @@ void lenv_add_builtins(lenv* e) {
   lenv_add_builtin(e, "-", builtin_sub);
   lenv_add_builtin(e, "*", builtin_mul);
   lenv_add_builtin(e, "/", builtin_div);
+
+  /* Variable functions */
+  lenv_add_builtin(e, "def", builtin_def);
 }
 
 int main(int argc, char** argv) {
