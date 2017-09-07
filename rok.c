@@ -67,11 +67,24 @@ lval* lval_num(long x) {
   return v;
 }
 
-lval* lval_err(char* m) {
+lval* lval_err(char* fmt, ...) {
   lval* v = malloc(sizeof(lval));
   v->type = LVAL_ERR;
-  v->err = malloc(strlen(m) + 1);
-  strcpy(v->err, m);
+
+  /* Create a va_list and initialize it */
+  va_list va;
+  va_start(va, fmt);
+
+  v->err = malloc(512);
+
+  /* Print the error string with a maximum of 511 characters */
+  vsnprintf(v->err, 511, fmt, va);
+
+  /* Reallocate to number of bytes actually used */
+  v->err = realloc(v->err, strlen(v->err)+1);
+
+  /* Clean up VA list */
+  va_end(va);
   return v;
 }
 
@@ -460,7 +473,7 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
   lval* f = lval_pop(v, 0);
   if (f->type != LVAL_FUN) {
     lval_del(f); lval_del(v);
-    return lval_err("First element is not a function!");
+    return lval_err("'%s' is not a function!", f->type);
   }
 
   /* If so call function to get result */
@@ -476,7 +489,7 @@ lval* lenv_get(lenv* e, lval* k) {
       return lval_copy(e->vals[i]);
     }
   }
-  return lval_err("unbound symbol!");
+  return lval_err("unbound symbol '%s'!", k->sym);
 }
 
 void lenv_put(lenv* e, lval* k, lval* v) {
