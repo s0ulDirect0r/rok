@@ -151,8 +151,24 @@ void lval_del(lval* v) {
   free(v);
 }
 
-#define LASSERT(args, cond, err) \
-  if (!(cond)) { lval_del(args); return lval_err(err); }
+char* ltype_name(int t) {
+  switch(t) {
+    case LVAL_FUN: return "Function";
+    case LVAL_NUM: return "Number";
+    case LVAL_ERR: return "Error";
+    case LVAL_SYM: return "Symbol";
+    case LVAL_SEXPR: return "S-Expression";
+    case LVAL_QEXPR: return "Q-Expression";
+    default: return "Unknown";
+  }
+}
+
+#define LASSERT(args, cond, fmt) \
+  if (!(cond)) {
+    lval* err = lval_err(fmt, ##__VA_ARGS__); \
+    lval_del(args); \
+    return err; \
+  }
 
 #define LASSERT_ARGS(args, count) \
   if (args->count != count) { lval_del(args); return lval_err("Function passed incorrect amount of arguments!");}
