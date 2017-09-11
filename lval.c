@@ -1,16 +1,5 @@
 #include "lval.h"
-
-/* Declare new lval struct */
-struct lval {
-  int type;
-  long num;
-  char* err;
-  char* sym;
-  lbuiltin fun;
-
-  int count;
-  struct lval** cell;
-};
+#include "lenv.h"
 
 /** Lval functions **/
 lval* lval_num(long x) {

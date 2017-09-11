@@ -1,7 +1,21 @@
 #ifndef lval_h
 #define lval_h
 
-struct lval;
+/* Declare new lval struct */
+struct lval {
+  int type;
+  long num;
+  char* err;
+  char* sym;
+  lbuiltin fun;
+
+  int count;
+  struct lval** cell;
+};
+
+/* Declare Enumerations for lval types */
+enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN };
+
 struct lenv;
 struct lbuiltin;
 typedef struct lval lval;
