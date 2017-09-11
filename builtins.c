@@ -1,4 +1,6 @@
 #include "builtins.h"
+#include "lenv.h"
+#include "lval.h"
 
 lval* builtin_op(lenv* e, lval* a, char* op) {
   /* Ensure all arguments are numbers */
