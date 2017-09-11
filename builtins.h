@@ -4,6 +4,8 @@
 #include "lval.h"
 #include "lenv.h"
 
+typedef struct lenv lenv;
+typedef struct lval lval;
 typedef lval*(*lbuiltin)(lenv*, lval*);
 
 lval* builtin_op(lenv* e, lval* a, char* op);
