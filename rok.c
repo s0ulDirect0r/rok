@@ -400,9 +400,13 @@ lval* builtin_list(lenv* e, lval* a) {
 
 lval* builtin_eval(lenv* e, lval* a) {
   LASSERT(a, a->count == 1,
-    "Function 'eval' passed too many arguments!");
+    "Function 'eval' passed too many arguments!"
+    "Got %s, Expected %s",
+    a->count, 1);
   LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
-     "Function 'eval' passed incorrect type!");
+     "Function 'eval' passed incorrect type!"
+     "Got %s, Expected %s",
+     ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
   lval* x = lval_take(a, 0);
   x->type = LVAL_SEXPR;
   return lval_eval(e, x);
@@ -411,7 +415,9 @@ lval* builtin_eval(lenv* e, lval* a) {
 lval* builtin_join(lenv* e, lval* a) {
   for(int i = 0; i < a->count; i++) {
     LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
-      "Function 'join' passed incorrect types!");
+      "Function 'join' passed incorrect types!"
+      "Got %s, Expected %s",
+      ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
   }
 
   lval* x = lval_pop(a, 0);
@@ -426,7 +432,9 @@ lval* builtin_join(lenv* e, lval* a) {
 
 lval* builtin_def(lenv* e, lval* a) {
   LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
-    "Function 'def' passed incorrect type!");
+    "Function 'def' passed incorrect type!",
+    "Got %s, Expected %s",
+    ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
 
   /* First argument is symbol list */
   lval* syms = a->cell[0];
@@ -434,13 +442,17 @@ lval* builtin_def(lenv* e, lval* a) {
   /* Ensure all elements of first list are symbols */
   for(int i = 0; i < syms->count; i++) {
     LASSERT(a, syms->cell[i]->type == LVAL_SYM,
-    "Function 'def' cannot define non-symbols!");
+    "Function 'def' cannot define non-symbols!",
+    "Got %s, Expected %s",
+    ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
   }
 
   /* Check correct number of symbols and values */
     LASSERT(a, syms->count == a->count-1,
     "Function 'def' cannot define incorrect "
-    "number of values to symbols.");
+    "number of values to symbols.",
+    "Got %i values, Expected %i values",
+    syms->count, a->count-1);
 
   /* Assign copies of values to symbols */
   for (int i = 0; i < syms->count; i++) {
