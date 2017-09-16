@@ -170,12 +170,6 @@ char* ltype_name(int t) {
     return err; \
   }
 
-#define LASSERT_ARGS(args, count) \
-  if (args->count != count) { lval_del(args); return lval_err("Function passed incorrect amount of arguments!");}
-
-#define LASSERT_EMPTY(lval) \
-  if (lval->cell[0]->count == 0) { lval_del(lval); return lval_err("Function passed {}!");}
-
 lval* lval_read_num(mpc_ast_t* t) {
   errno = 0;
   long x = strtol(t->contents, NULL, 10);
