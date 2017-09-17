@@ -355,8 +355,12 @@ lval* builtin_head(lenv* e, lval* a) {
      "Function 'head' passed incorrect types!",
      "Got %s, Expected %s",
      ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
-  LASSERT_EMPTY(a);
-  LASSERT_ARGS(a, count);
+  LASSERT(a, a->cell[0]->count != 0,
+   "Function 'head' passed {}!");
+  LASSERT(a, a->count == 1,
+    "Function 'head' passed too many arguments!",
+    "Got %i, Expected %i",
+    a->count, 1);
 
   /* Otherwise take first argument */
   lval* v = lval_take(a, 0);
