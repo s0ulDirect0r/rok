@@ -44,13 +44,21 @@ typedef lval*(*lbuiltin)(lenv*, lval*);
 /* Declare new lval struct */
 struct lval {
   int type;
+
+  /* Basic */
   long num;
   char* err;
   char* sym;
-  lbuiltin fun;
 
+  /* Function */
+  lbuiltin builtin;
+  lenv* env;
+  lval* formals;
+  lval* body;
+
+  /* Expression */
   int count;
-  struct lval** cell;
+  lval** cell;
 };
 
 struct lenv {
@@ -112,10 +120,10 @@ lval* lval_qexpr(void) {
   return v;
 }
 
-lval* lval_fun(lbuiltin fun) {
+lval* lval_fun(lbuiltin builtin) {
   lval* v = malloc(sizeof(lval));
   v->type = LVAL_FUN;
-  v->fun = fun;
+  v->builtin = builtin;
   return v;
 }
 
@@ -271,7 +279,7 @@ lval* lval_copy(lval* v) {
 
   switch (v->type) {
     case LVAL_NUM: x->num = v->num; break;
-    case LVAL_FUN: x->fun = v->fun; break;
+    case LVAL_FUN: x->builtin = v->builtin; break;
     case LVAL_SYM:
       x->sym = malloc(strlen(v->sym) + 1);
       strcpy(x->sym, v->sym); break;
@@ -509,7 +517,7 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
   }
 
   /* If so call function to get result */
-  lval* result = f->fun(e, v);
+  lval* result = f->builtin(e, v);
   lval_del(f);
   return result;
 }
