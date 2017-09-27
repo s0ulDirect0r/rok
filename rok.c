@@ -300,6 +300,22 @@ lval* lval_copy(lval* v) {
   return x;
 }
 
+lval* lval_lambda(lval* formals, lval* body) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_FUN;
+
+  /* Set builtin to null */
+  v->builtin = NULL;
+
+  /* build new environment */
+  v->env = lenv_new();
+
+  /* set formals and body */
+  v->formals = formals;
+  v->body = body;
+  return v;
+}
+
 lval* builtin_op(lenv* e, lval* a, char* op) {
   /* Ensure all arguments are numbers */
   for (int i = 0; i < a->count; i++) {
