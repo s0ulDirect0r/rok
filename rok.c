@@ -142,7 +142,13 @@ void lval_del(lval* v) {
     /* For err or sym free the data */
     case LVAL_ERR: free(v->err); break;
     case LVAL_SYM: free(v->sym); break;
-    case LVAL_FUN: break;
+    case LVAL_FUN:
+      if (!v->builtin) {
+        lenv_del(v->env);
+        lval_del(v->formals);
+        lval_del(v->body);
+      }
+    break;
 
     /* If qexpr or sexpr then delete all elements inside */
     case LVAL_QEXPR:
@@ -231,7 +237,14 @@ void lval_print(lval* v) {
     case LVAL_NUM: printf("%li", v->num); break;
     case LVAL_ERR: printf("Error: %s", v->err); break;
     case LVAL_SYM: printf("%s", v->sym); break;
-    case LVAL_FUN: printf("<function>"); break;
+    case LVAL_FUN:
+      if (v->builtin) {
+        printf("<builtin>");
+      } else {
+        printf("(\\ "); lval_print(v->formals);
+        putchar(' '); lval_print(v->body); putchar(')');
+      }
+    break;
     case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
     case LVAL_QEXPR: lval_expr_print(v, '{', '}'); break;
     break;
@@ -279,7 +292,16 @@ lval* lval_copy(lval* v) {
 
   switch (v->type) {
     case LVAL_NUM: x->num = v->num; break;
-    case LVAL_FUN: x->builtin = v->builtin; break;
+    case LVAL_FUN:
+      if (v->builtin) {
+        x->builtin = v->builtin;
+      } else {
+        x->builtin = NULL;
+        x->env = lenv_copy(v->env);
+        x->formals = lval_copy(v->formals);
+        x->body = lval_copy(v->body);
+      }
+    break;
     case LVAL_SYM:
       x->sym = malloc(strlen(v->sym) + 1);
       strcpy(x->sym, v->sym); break;
