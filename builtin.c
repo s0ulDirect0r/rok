@@ -2,6 +2,13 @@
 #include "lenv.h"
 #include "lval.h"
 
+#define LASSERT(args, cond, fmt, ...) \
+  if (!(cond)) { \
+    lval* err = lval_err(fmt, ##__VA_ARGS__); \
+    lval_del(args); \
+    return err; \
+  }
+
 lval* builtin_op(lenv* e, lval* a, char* op) {
   /* Ensure all arguments are numbers */
   for (int i = 0; i < a->count; i++) {

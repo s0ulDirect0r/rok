@@ -42,13 +42,6 @@ char* ltype_name(int t) {
   }
 }
 
-#define LASSERT(args, cond, fmt, ...) \
-  if (!(cond)) { \
-    lval* err = lval_err(fmt, ##__VA_ARGS__); \
-    lval_del(args); \
-    return err; \
-  }
-
 int main(int argc, char** argv) {
   /* Create some parsers */
   mpc_parser_t* Number   = mpc_new("number");
