@@ -183,6 +183,15 @@ lval* builtin_len(lenv* e, lval* a) {
   return lval_num(a->cell[0]->count);
 }
 
+// Define a new lambda
+lval* builtin_lambda(lenv* e, lvla* a) {
+  /* Check two arguments, each of which are Q-Expressions */
+
+  /* Check if first Q-expression contains only symbols */
+
+  /* Pop first two arguments and pass them to lval_lambda */
+}
+
 lval* builtin(lenv* e, lval* a, char* func) {
   if(strcmp("list", func) == 0) { return builtin_list(e, a); }
   if(strcmp("head", func) == 0) { return builtin_head(e, a); }
