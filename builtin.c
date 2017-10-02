@@ -200,7 +200,7 @@ lval* builtin_len(lenv* e, lval* a) {
 }
 
 // Define a new lambda
-lval* builtin_lambda(lenv* e, lvla* a) {
+lval* builtin_lambda(lenv* e, lval* a) {
   /* Check two arguments, each of which are Q-Expressions */
 
   /* Check if first Q-expression contains only symbols */
