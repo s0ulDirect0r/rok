@@ -202,10 +202,21 @@ lval* builtin_len(lenv* e, lval* a) {
 // Define a new lambda
 lval* builtin_lambda(lenv* e, lval* a) {
   /* Check two arguments, each of which are Q-Expressions */
+  LASSERT_NUM("\\", a, 2);
+  LASSERT_TYPE("\\", a, 0, LVAL_QEXPR)
+  LASSERT_TYPE("\\", a, 1, LVAL_QEXPR)
 
   /* Check if first Q-expression contains only symbols */
+  for (int i = 0; i < a->cell[0]->count; i++) {
+    LASSERT(a, (a->cell[0]->cell[i]->type == LVAL_SYM),
+    "Cannot define non-symbol. Got %s, Expected %s.",
+    ltype_name(a->cell[0]->cell[i]->type), ltype_name(LVAL_SYM));
+  }
 
   /* Pop first two arguments and pass them to lval_lambda */
+  lval* formals = lval_pop(a, 0);
+  lval* body = lval_pop(a, 1);
+  return lval_lambda(formals, body);
 }
 
 lval* builtin(lenv* e, lval* a, char* func) {
