@@ -299,3 +299,16 @@ lval* lval_eval(lenv* e, lval* v) {
 
 /* Print an "lval" followed by a newline */
 void lval_println(lval* v) { lval_print(v); putchar('\n'); }
+
+/* Return string describing passed Lval Type */
+char* ltype_name(int t) {
+  switch(t) {
+    case LVAL_FUN: return "Function";
+    case LVAL_NUM: return "Number";
+    case LVAL_ERR: return "Error";
+    case LVAL_SYM: return "Symbol";
+    case LVAL_SEXPR: return "S-Expression";
+    case LVAL_QEXPR: return "Q-Expression";
+    default: return "Unknown";
+  }
+}

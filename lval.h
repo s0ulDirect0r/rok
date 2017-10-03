@@ -50,5 +50,7 @@ lval* lval_pop(lval* v, int i);
 lval* lval_take(lval* v, int i);
 lval* lval_join(lval* x, lval* y);
 lval* lval_copy(lval* v);
+lval* lval_lambda(lval* formals, lval* body);
+char* ltype_name(int t);
 
 #endif
