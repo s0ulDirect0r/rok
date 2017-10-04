@@ -8,6 +8,7 @@ struct lval;
 typedef struct lval*(*lbuiltin)(lenv*, struct lval*);
 
 struct lenv {
+  lenv* parent;
   int count;
   char** syms;
   struct lval** vals;
