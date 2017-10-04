@@ -16,6 +16,7 @@ lval* builtin_eval(struct lenv* e, lval* a);
 lval* builtin_join(struct lenv* e, lval* a);
 lval* builtin_def(struct lenv* e, lval* a);
 lval* builtin_len(struct lenv* e, lval* a);
+lval* builtin_lambda(struct lenv* e, lval* a);
 lval* builtin(struct lenv* e, lval* a, char* func);
 
 #endif
