@@ -72,6 +72,13 @@ lenv* lenv_copy(lenv* e) {
   return copy;
 }
 
+void lenv_def(lenv* e, lval* k, lval* v) {
+  /* Iterate till e has no parent */
+  while (e->parent) { e = e->parent; }
+  /* Put value in */
+  lenv_put(e, k, v);
+}
+
 void lenv_add_builtin(lenv* e, char* name, lbuiltin func) {
   lval* k = lval_sym(name);
   lval* v = lval_fun(func);
