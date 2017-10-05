@@ -50,8 +50,8 @@ int main(int argc, char** argv) {
     Number, Symbol, Sexpr, Qexpr, Expr, Rok);
 
   /* Print version and exit information */
-  puts("Rok Version 0.0.0.0.10");
-  puts("Let's Rok, Motherfuckers!!");
+  puts("Rok Version 0.0.0.0.12");
+  puts("Let's Rok!!!");
   puts("Press Ctrl-C to Exit\n");
 
   lenv* e = lenv_new();
