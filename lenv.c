@@ -103,6 +103,7 @@ void lenv_add_builtins(lenv* e) {
 
   /* Variable functions */
   lenv_add_builtin(e, "def", builtin_def);
+  lenv_add_builtin(e, "=", builtin_put);
 
   /* Lambda functions */
   lenv_add_builtin(e, "\\", builtin_lambda);

@@ -219,6 +219,45 @@ lval* builtin_lambda(lenv* e, lval* a) {
   return lval_lambda(formals, body);
 }
 
+lval* builtin_def(lenv* e, lval* a) {
+  return builtin_var(e, a, "def");
+}
+
+lval* builtin_put(lenv* e, lval* a) {
+  return builtin_var(e, a, "=");
+}
+
+lval* builtin_var(lenv* e, lval* a, char* func) {
+  LASSERT_TYPE(func, a, 0, LVAL_QEXPR);
+
+  lval* syms = a->cell[0];
+  for (int i = 0; i < syms->count; i++) {
+    LASSERT(a, (syms->cell[i]->type == LVAL_SYM),
+      "Function '%s' cannot define non-symbol. "
+      "Got %s, Expected %s.", func,
+      ltype_name(syms->cell[i]->type),
+      ltype_name(LVAL_SYM));
+  }
+
+  LASSERT(a, (syms->count == a->count-1),
+    "Function '%s' passed too many arguments for symbols. "
+    "Got %i, Expected %i.", func, syms->count, a->count-1);
+
+  for (int i = 0; i < syms->count; i++) {
+    /* If 'def' define in globally. If 'put' define in locally */
+    if (strcmp(func, "def") == 0) {
+      lenv_def(e, syms->cell[i], a->cell[i+1]);
+    }
+
+    if (strcmp(func, '=') == 0) {
+      lenv_put(e, syms->cell[i], a->cell[i+1]);
+    }
+  }
+
+  lval_del(a);
+  return lval_sexpr();
+}
+
 lval* builtin(lenv* e, lval* a, char* func) {
   if(strcmp("list", func) == 0) { return builtin_list(e, a); }
   if(strcmp("head", func) == 0) { return builtin_head(e, a); }
