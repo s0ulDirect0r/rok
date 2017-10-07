@@ -161,39 +161,6 @@ lval* builtin_join(lenv* e, lval* a) {
   return x;
 }
 
-lval* builtin_def(lenv* e, lval* a) {
-  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
-    "Function 'def' passed incorrect type! \n"
-    "Got %s, Expected %s",
-    ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
-
-  /* First argument is symbol list */
-  lval* syms = a->cell[0];
-
-  /* Ensure all elements of first list are symbols */
-  for(int i = 0; i < syms->count; i++) {
-    LASSERT(a, syms->cell[i]->type == LVAL_SYM,
-    "Function 'def' cannot define non-symbols! \n"
-    "Got %s, Expected %s",
-    ltype_name(syms->cell[i]->type), ltype_name(LVAL_SYM));
-  }
-
-  /* Check correct number of symbols and values */
-    LASSERT(a, syms->count == a->count-1,
-    "Function 'def' cannot define incorrect "
-    "number of values to symbols. \n"
-    "Got %i values, Expected %i values",
-    syms->count, a->count-1);
-
-  /* Assign copies of values to symbols */
-  for (int i = 0; i < syms->count; i++) {
-    lenv_put(e, syms->cell[i], a->cell[i+1]);
-  }
-
-  lval_del(a);
-  return lval_sexpr();
-}
-
 // Return the number of elements in a Qexpression
 lval* builtin_len(lenv* e, lval* a) {
   return lval_num(a->cell[0]->count);
@@ -249,7 +216,7 @@ lval* builtin_var(lenv* e, lval* a, char* func) {
       lenv_def(e, syms->cell[i], a->cell[i+1]);
     }
 
-    if (strcmp(func, '=') == 0) {
+    if (strcmp(func, "=") == 0) {
       lenv_put(e, syms->cell[i], a->cell[i+1]);
     }
   }

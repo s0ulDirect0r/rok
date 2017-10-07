@@ -51,6 +51,7 @@ lval* lval_take(lval* v, int i);
 lval* lval_join(lval* x, lval* y);
 lval* lval_copy(lval* v);
 lval* lval_lambda(lval* formals, lval* body);
+lval* lval_call(struct lenv* e, lval* f, lval* a);
 char* ltype_name(int t);
 
 #endif
