@@ -25,7 +25,7 @@ void lenv_del(lenv* e) {
 lval* lenv_get(lenv* e, lval* k) {
   /* Iterate over all items in the environment */
   for (int i = 0; i < e->count; i++) {
-    if(strcmp(e->syms[i], k->sym) == 0) {
+    if (strcmp(e->syms[i], k->sym) == 0) {
       return lval_copy(e->vals[i]);
     }
   }
@@ -40,7 +40,7 @@ lval* lenv_get(lenv* e, lval* k) {
 void lenv_put(lenv* e, lval* k, lval* v) {
   /* Iterate */
   for (int i = 0; i < e->count; i++) {
-    if(strcmp(e->syms[i], k->sym) == 0) {
+    if (strcmp(e->syms[i], k->sym) == 0) {
       lval_del(e->vals[i]);
       e->vals[i] = lval_copy(v);
       return;

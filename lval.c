@@ -270,17 +270,21 @@ lval* lval_eval_sexpr(lenv* e, lval* v) {
   if (v->count == 0) { return v; }
 
   /* Single Expression */
-  if (v->count == 1) { return lval_take(v, 0); }
+  if (v->count == 1) { return lval_eval(e, lval_take(v, 0)); }
 
   /* Ensure First Element is a function after evaluation */
   lval* f = lval_pop(v, 0);
   if (f->type != LVAL_FUN) {
+    lval* err = lval_err(
+      "S-Expression starts with incorrect type. "
+      "Got %s, Expected %s. ",
+      ltype_name(f->type), ltype_name(LVAL_FUN));
     lval_del(f); lval_del(v);
-    return lval_err("'%s' is not a function!", f->type);
+    return err;
   }
 
   /* If so call function to get result */
-  lval* result = f->builtin(e, v);
+  lval* result = lval_call(e, f, v);
   lval_del(f);
   return result;
 }
@@ -319,7 +323,7 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
     lval* sym = lval_pop(f->formals, 0);
 
     /* Pop the next argument from the list */
-    lval* val = lval_pop(a, 1);
+    lval* val = lval_pop(a, 0);
 
     /* Bind a copy into the function's argument */
     lenv_put(f->env, sym, val);
