@@ -182,7 +182,7 @@ lval* builtin_lambda(lenv* e, lval* a) {
 
   /* Pop first two arguments and pass them to lval_lambda */
   lval* formals = lval_pop(a, 0);
-  lval* body = lval_pop(a, 1);
+  lval* body = lval_pop(a, 0);
   lval_del(a);
   return lval_lambda(formals, body);
 }
