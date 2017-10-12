@@ -20,6 +20,7 @@ lval* builtin_lambda(struct lenv* e, lval* a);
 lval* builtin_def(struct lenv* e, lval* a);
 lval* builtin_put(struct lenv* e, lval* a);
 lval* builtin_var(struct lenv* e, lval* a, char* func);
+lval* builtin_rok(struct lenv* e, lval* a, char* name);
 lval* builtin(struct lenv* e, lval* a, char* func);
 
 #endif

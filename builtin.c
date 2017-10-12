@@ -226,6 +226,10 @@ lval* builtin_var(lenv* e, lval* a, char* func) {
   return lval_sexpr();
 }
 
+lval* builtin_rok(lenv* e, lval* a, char* name) {
+  return lval_new();
+}
+
 lval* builtin(lenv* e, lval* a, char* func) {
   if(strcmp("list", func) == 0) { return builtin_list(e, a); }
   if(strcmp("head", func) == 0) { return builtin_head(e, a); }
