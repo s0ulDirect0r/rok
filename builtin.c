@@ -226,7 +226,7 @@ lval* builtin_var(lenv* e, lval* a, char* func) {
   return lval_sexpr();
 }
 
-lval* builtin_rok(lenv* e, lval* a, char* name) {
+lval* builtin_rok(lenv* e, lval* a) {
   return lval_new();
 }
 
@@ -239,6 +239,7 @@ lval* builtin(lenv* e, lval* a, char* func) {
   if(strcmp("len", func) == 0) { return builtin_len(e, a); }
   if(strcmp("def", func) == 0) { return builtin_def(e, a); }
   if(strstr("+-/*^%", func)) { return builtin_op(e, a, func); }
+  if(strcmp("rok", func) == 0) { return builtin_rok(e, a); }
   lval_del(a);
   return lval_err("Unknown Function!");
 }
