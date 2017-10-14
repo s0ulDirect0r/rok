@@ -227,6 +227,8 @@ lval* builtin_var(lenv* e, lval* a, char* func) {
 }
 
 lval* builtin_rok(lenv* e, lval* a) {
+  // Check for function name, and arguments
+  // Is this somewhere I can use builtin_var?
   return lval_new();
 }
 
