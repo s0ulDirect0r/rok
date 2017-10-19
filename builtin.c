@@ -103,62 +103,62 @@ lval* builtin_head(lenv* env, lval* args) {
   return head;
 }
 
-lval* builtin_tail(lenv* e, lval* a) {
+lval* builtin_tail(lenv* env, lval* args) {
   /* Check Error Conditions */
-  LASSERT(a, a->count == 1,
+  LASSERT(args, args->count == 1,
     "Function 'tail' passed too many arguments! \n"
     "Got %i, Expected %i",
-    a->count, 1);
-  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+    args->count, 1);
+  LASSERT(args, args->cell[0]->type == LVAL_QEXPR,
     "Function 'tail' passed incorrect types! \n"
     "Got %s, Expected %s",
-    ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
-  LASSERT(a, a->cell[0]->count != 0,
+    ltype_name(args->cell[0]->type), ltype_name(LVAL_QEXPR));
+  LASSERT(args, args->cell[0]->count != 0,
     "Function 'tail' passed {}!");
 
   /* Other wise take first arg */
-  lval* v = lval_take(a, 0);
+  lval* tail = lval_take(a, 0);
 
   /* Delete first element and return */
-  lval_del(lval_pop(v, 0));
-  return v;
+  lval_del(lval_pop(tail, 0));
+  return tail;
 }
 
-lval* builtin_list(lenv* e, lval* a) {
-  a->type = LVAL_QEXPR;
-  return a;
+lval* builtin_list(lenv* env, lval* args) {
+  args->type = LVAL_QEXPR;
+  return args;
 }
 
-lval* builtin_eval(lenv* e, lval* a) {
-  LASSERT(a, a->count == 1,
+lval* builtin_eval(lenv* env, lval* args) {
+  LASSERT(args, args->count == 1,
     "Function 'eval' passed too many arguments! \n"
     "Got %s, Expected %s",
-    a->count, 1);
-  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+    args->count, 1);
+  LASSERT(args, args->cell[0]->type == LVAL_QEXPR,
      "Function 'eval' passed incorrect type! \n"
      "Got %s, Expected %s",
-     ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
-  lval* x = lval_take(a, 0);
-  x->type = LVAL_SEXPR;
-  return lval_eval(e, x);
+     ltype_name(args->cell[0]->type), ltype_name(LVAL_QEXPR));
+  lval* sexpr = lval_take(a, 0);
+  sexpr->type = LVAL_SEXPR;
+  return lval_eval(env, sexpr);
 }
 
-lval* builtin_join(lenv* e, lval* a) {
-  for(int i = 0; i < a->count; i++) {
-    LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+lval* builtin_join(lenv* env, lval* args) {
+  for(int i = 0; i < args->count; i++) {
+    LASSERT(a, args->cell[0]->type == LVAL_QEXPR,
       "Function 'join' passed incorrect types! \n"
       "Got %s, Expected %s",
-      ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
+      ltype_name(args->cell[0]->type), ltype_name(LVAL_QEXPR));
   }
 
-  lval* x = lval_pop(a, 0);
+  lval* joined_lval = lval_pop(a, 0);
 
-  while(a->count) {
-    x = lval_join(x, lval_pop(a, 0));
+  while(args->count) {
+    joined_lval = lval_join(joined_lval, lval_pop(args, 0));
   }
 
-  lval_del(a);
-  return x;
+  lval_del(args);
+  return joined_lval;
 }
 
 // Return the number of elements in a Qexpression
