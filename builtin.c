@@ -25,27 +25,27 @@
   LASSERT(args, args->cell[index]->count != 0, \
     "Function '%s' passed {} for argument %i.", func, index)
 
-lval* builtin_op(lenv* e, lval* a, char* op) {
+lval* builtin_op(lenv* env, lval* args, char* op) {
   /* Ensure all arguments are numbers */
-  for (int i = 0; i < a->count; i++) {
-    if(a->cell[i]->type != LVAL_NUM) {
-      lval_del(a);
+  for (int i = 0; i < args->count; i++) {
+    if(args->cell[i]->type != LVAL_NUM) {
+      lval_del(args);
       return lval_err("Cannot operate on non-numbers");
     }
   }
 
   /* Pop the first element */
-  lval* x = lval_pop(a, 0);
+  lval* x = lval_pop(args, 0);
 
   /* If no arguments and sub then perform unary negation */
-  if ((strcmp(op, "-") == 0) && a->count == 0) {
+  if ((strcmp(op, "-") == 0) && args->count == 0) {
     x->num = -x->num;
   }
 
   /* While there are still elements remaining */
-  while (a->count > 0) {
+  while (args->count > 0) {
     /* Pop the next element */
-    lval* y = lval_pop(a, 0);
+    lval* y = lval_pop(args, 0);
 
     if(strcmp(op, "+") == 0) { x->num += y->num; }
     if(strcmp(op, "-") == 0) { x->num -= y->num; }
@@ -62,45 +62,45 @@ lval* builtin_op(lenv* e, lval* a, char* op) {
     lval_del(y);
   }
 
-  lval_del(a); return x;
+  lval_del(args); return x;
 }
 
-lval* builtin_add(lenv* e, lval* a) {
-  return builtin_op(e, a, "+");
+lval* builtin_add(lenv* env, lval* args) {
+  return builtin_op(env, args, "+");
 }
 
-lval* builtin_sub(lenv* e, lval* a) {
-  return builtin_op(e, a, "-");
+lval* builtin_sub(lenv* env, lval* args) {
+  return builtin_op(env, args, "-");
 }
 
-lval* builtin_mul(lenv* e, lval* a) {
-  return builtin_op(e, a, "*");
+lval* builtin_mul(lenv* env, lval* args) {
+  return builtin_op(env, args, "*");
 }
 
-lval* builtin_div(lenv* e, lval* a) {
-  return builtin_op(e, a, "/");
+lval* builtin_div(lenv* env, lval* args) {
+  return builtin_op(env, args, "/");
 }
 
-lval* builtin_head(lenv* e, lval* a) {
+lval* builtin_head(lenv* env, lval* args) {
   /* Check Error Conditions */
   int count = 1;
-  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+  LASSERT(args, args->cell[0]->type == LVAL_QEXPR,
      "Function 'head' passed incorrect types! \n"
      "Got %s, Expected %s.",
-     ltype_name(a->cell[0]->type), ltype_name(LVAL_QEXPR));
-  LASSERT(a, a->cell[0]->count != 0,
+     ltype_name(args->cell[0]->type), ltype_name(LVAL_QEXPR));
+  LASSERT(args, args->cell[0]->count != 0,
    "Function 'head' passed {}!");
-  LASSERT(a, a->count == count,
+  LASSERT(args, args->count == count,
     "Function 'head' passed too many arguments! \n"
     "Got %i, Expected %i.",
-    a->count, 1);
+    args->count, 1);
 
   /* Otherwise take first argument */
-  lval* v = lval_take(a, 0);
+  lval* head = lval_take(args, 0);
 
   /* Delete all elements that are not head and return */
-  while(v->count > 1) { lval_del(lval_pop(v, 1)); }
-  return v;
+  while(head->count > 1) { lval_del(lval_pop(head, 1)); }
+  return head;
 }
 
 lval* builtin_tail(lenv* e, lval* a) {
@@ -226,12 +226,6 @@ lval* builtin_var(lenv* e, lval* a, char* func) {
   return lval_sexpr();
 }
 
-lval* builtin_rok(lenv* e, lval* a) {
-  // Check for function name, and arguments
-  // Is this somewhere I can use builtin_var?
-  return lval_new();
-}
-
 lval* builtin(lenv* e, lval* a, char* func) {
   if(strcmp("list", func) == 0) { return builtin_list(e, a); }
   if(strcmp("head", func) == 0) { return builtin_head(e, a); }
@@ -241,7 +235,6 @@ lval* builtin(lenv* e, lval* a, char* func) {
   if(strcmp("len", func) == 0) { return builtin_len(e, a); }
   if(strcmp("def", func) == 0) { return builtin_def(e, a); }
   if(strstr("+-/*^%", func)) { return builtin_op(e, a, func); }
-  if(strcmp("rok", func) == 0) { return builtin_rok(e, a); }
   lval_del(a);
   return lval_err("Unknown Function!");
 }
