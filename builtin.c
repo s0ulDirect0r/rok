@@ -167,74 +167,74 @@ lval* builtin_len(lenv* e, lval* a) {
 }
 
 // Define a new lambda
-lval* builtin_lambda(lenv* e, lval* a) {
+lval* builtin_lambda(lenv* env, lval* args) {
   /* Check two arguments, each of which are Q-Expressions */
-  LASSERT_NUM("\\", a, 2);
-  LASSERT_TYPE("\\", a, 0, LVAL_QEXPR);
-  LASSERT_TYPE("\\", a, 1, LVAL_QEXPR);
+  LASSERT_NUM("\\", args, 2);
+  LASSERT_TYPE("\\", args, 0, LVAL_QEXPR);
+  LASSERT_TYPE("\\", args, 1, LVAL_QEXPR);
 
   /* Check if first Q-expression contains only symbols */
-  for (int i = 0; i < a->cell[0]->count; i++) {
-    LASSERT(a, (a->cell[0]->cell[i]->type == LVAL_SYM),
+  for (int i = 0; i < args->cell[0]->count; i++) {
+    LASSERT(args, (args->cell[0]->cell[i]->type == LVAL_SYM),
     "Cannot define non-symbol. Got %s, Expected %s.",
-    ltype_name(a->cell[0]->cell[i]->type), ltype_name(LVAL_SYM));
+    ltype_name(args->cell[0]->cell[i]->type), ltype_name(LVAL_SYM));
   }
 
   /* Pop first two arguments and pass them to lval_lambda */
-  lval* formals = lval_pop(a, 0);
-  lval* body = lval_pop(a, 0);
-  lval_del(a);
+  lval* formals = lval_pop(args, 0);
+  lval* body = lval_pop(args, 0);
+  lval_del(args);
   return lval_lambda(formals, body);
 }
 
-lval* builtin_def(lenv* e, lval* a) {
-  return builtin_var(e, a, "def");
+lval* builtin_def(lenv* env, lval* args) {
+  return builtin_var(env, args, "def");
 }
 
-lval* builtin_put(lenv* e, lval* a) {
-  return builtin_var(e, a, "=");
+lval* builtin_put(lenv* env, lval* args) {
+  return builtin_var(env, args, "=");
 }
 
-lval* builtin_var(lenv* e, lval* a, char* func) {
-  LASSERT_TYPE(func, a, 0, LVAL_QEXPR);
+lval* builtin_var(lenv* env, lval* args, char* func) {
+  LASSERT_TYPE(func, args, 0, LVAL_QEXPR);
 
-  lval* syms = a->cell[0];
+  lval* syms = args->cell[0];
   for (int i = 0; i < syms->count; i++) {
-    LASSERT(a, (syms->cell[i]->type == LVAL_SYM),
+    LASSERT(args, (syms->cell[i]->type == LVAL_SYM),
       "Function '%s' cannot define non-symbol. "
       "Got %s, Expected %s.", func,
       ltype_name(syms->cell[i]->type),
       ltype_name(LVAL_SYM));
   }
 
-  LASSERT(a, (syms->count == a->count-1),
+  LASSERT(args, (syms->count == args->count-1),
     "Function '%s' passed too many arguments for symbols. "
-    "Got %i, Expected %i.", func, syms->count, a->count-1);
+    "Got %i, Expected %i.", func, syms->count, args->count-1);
 
   for (int i = 0; i < syms->count; i++) {
     /* If 'def' define in globally. If 'put' define in locally */
     if (strcmp(func, "def") == 0) {
-      lenv_def(e, syms->cell[i], a->cell[i+1]);
+      lenv_def(env, syms->cell[i], args->cell[i+1]);
     }
 
     if (strcmp(func, "=") == 0) {
-      lenv_put(e, syms->cell[i], a->cell[i+1]);
+      lenv_put(env, syms->cell[i], args->cell[i+1]);
     }
   }
 
-  lval_del(a);
+  lval_del(args);
   return lval_sexpr();
 }
 
-lval* builtin(lenv* e, lval* a, char* func) {
-  if(strcmp("list", func) == 0) { return builtin_list(e, a); }
-  if(strcmp("head", func) == 0) { return builtin_head(e, a); }
-  if(strcmp("tail", func) == 0) { return builtin_tail(e, a); }
-  if(strcmp("eval", func) == 0) { return builtin_eval(e, a); }
-  if(strcmp("join", func) == 0) { return builtin_join(e, a); }
-  if(strcmp("len", func) == 0) { return builtin_len(e, a); }
-  if(strcmp("def", func) == 0) { return builtin_def(e, a); }
-  if(strstr("+-/*^%", func)) { return builtin_op(e, a, func); }
-  lval_del(a);
+lval* builtin(lenv* env, lval* args, char* func) {
+  if(strcmp("list", func) == 0) { return builtin_list(env, args); }
+  if(strcmp("head", func) == 0) { return builtin_head(env, args); }
+  if(strcmp("tail", func) == 0) { return builtin_tail(env, args); }
+  if(strcmp("eval", func) == 0) { return builtin_eval(env, args); }
+  if(strcmp("join", func) == 0) { return builtin_join(env, args); }
+  if(strcmp("len", func) == 0) { return builtin_len(env, args); }
+  if(strcmp("def", func) == 0) { return builtin_def(env, args); }
+  if(strstr("+-/*^%", func)) { return builtin_op(env, args, func); }
+  lval_del(args);
   return lval_err("Unknown Function!");
 }
