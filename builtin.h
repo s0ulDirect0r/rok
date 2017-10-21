@@ -4,22 +4,22 @@
 #include "lval.h"
 #include "lenv.h"
 
-lval* builtin_op(struct lenv* e, lval* a, char* op);
-lval* builtin_add(struct lenv* e, lval* a);
-lval* builtin_sub(struct lenv* e, lval* a);
-lval* builtin_mul(struct lenv* e, lval* a);
-lval* builtin_div(struct lenv* e, lval* a);
-lval* builtin_head(struct lenv* e, lval* a);
-lval* builtin_tail(struct lenv* e, lval* a);
-lval* builtin_list(struct lenv* e, lval* a);
-lval* builtin_eval(struct lenv* e, lval* a);
-lval* builtin_join(struct lenv* e, lval* a);
-lval* builtin_def(struct lenv* e, lval* a);
-lval* builtin_len(struct lenv* e, lval* a);
-lval* builtin_lambda(struct lenv* e, lval* a);
-lval* builtin_put(struct lenv* e, lval* a);
-lval* builtin_var(struct lenv* e, lval* a, char* func);
-lval* builtin_rok(struct lenv* e, lval* a);
-lval* builtin(struct lenv* e, lval* a, char* func);
+lval* builtin_op(struct lenv* env, lval* args, char* op);
+lval* builtin_add(struct lenv* env, lval* args);
+lval* builtin_sub(struct lenv* env, lval* args);
+lval* builtin_mul(struct lenv* env, lval* args);
+lval* builtin_div(struct lenv* env, lval* args);
+lval* builtin_head(struct lenv* env, lval* args);
+lval* builtin_tail(struct lenv* env, lval* args);
+lval* builtin_list(struct lenv* env, lval* args);
+lval* builtin_eval(struct lenv* env, lval* args);
+lval* builtin_join(struct lenv* env, lval* args);
+lval* builtin_def(struct lenv* env, lval* args);
+lval* builtin_len(struct lenv* env, lval* args);
+lval* builtin_lambda(struct lenv* env, lval* args);
+lval* builtin_put(struct lenv* env, lval* args);
+lval* builtin_var(struct lenv* env, lval* args, char* func);
+lval* builtin_rok(struct lenv* env, lval* args);
+lval* builtin(struct lenv* env, lval* args, char* func);
 
 #endif
