@@ -117,7 +117,7 @@ lval* builtin_tail(lenv* env, lval* args) {
     "Function 'tail' passed {}!");
 
   /* Other wise take first arg */
-  lval* tail = lval_take(a, 0);
+  lval* tail = lval_take(args, 0);
 
   /* Delete first element and return */
   lval_del(lval_pop(tail, 0));
@@ -138,20 +138,20 @@ lval* builtin_eval(lenv* env, lval* args) {
      "Function 'eval' passed incorrect type! \n"
      "Got %s, Expected %s",
      ltype_name(args->cell[0]->type), ltype_name(LVAL_QEXPR));
-  lval* sexpr = lval_take(a, 0);
+  lval* sexpr = lval_take(args, 0);
   sexpr->type = LVAL_SEXPR;
   return lval_eval(env, sexpr);
 }
 
 lval* builtin_join(lenv* env, lval* args) {
   for(int i = 0; i < args->count; i++) {
-    LASSERT(a, args->cell[0]->type == LVAL_QEXPR,
+    LASSERT(args, args->cell[0]->type == LVAL_QEXPR,
       "Function 'join' passed incorrect types! \n"
       "Got %s, Expected %s",
       ltype_name(args->cell[0]->type), ltype_name(LVAL_QEXPR));
   }
 
-  lval* joined_lval = lval_pop(a, 0);
+  lval* joined_lval = lval_pop(args, 0);
 
   while(args->count) {
     joined_lval = lval_join(joined_lval, lval_pop(args, 0));
@@ -162,8 +162,8 @@ lval* builtin_join(lenv* env, lval* args) {
 }
 
 // Return the number of elements in a Qexpression
-lval* builtin_len(lenv* e, lval* a) {
-  return lval_num(a->cell[0]->count);
+lval* builtin_len(lenv* env, lval* args) {
+  return lval_num(args->cell[0]->count);
 }
 
 // Define a new lambda
