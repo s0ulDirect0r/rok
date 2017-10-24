@@ -3,129 +3,129 @@
 #include "builtin.h"
 
 /** Lval functions **/
-lval* lval_num(long x) {
-  lval* v = malloc(sizeof(lval));
-  v->type = LVAL_NUM;
-  v->num = x;
-  return v;
+lval* lval_num(long num) {
+  lval* val = malloc(sizeof(lval));
+  val->type = LVAL_NUM;
+  val->num = n;
+  return val;
 }
 
 lval* lval_err(char* fmt, ...) {
-  lval* v = malloc(sizeof(lval));
-  v->type = LVAL_ERR;
+  lval* val = malloc(sizeof(lval));
+  val->type = LVAL_ERR;
 
   /* Create a va_list and initialize it */
   va_list va;
   va_start(va, fmt);
 
-  v->err = malloc(512);
+  val->err = malloc(512);
 
   /* Print the error string with a maximum of 511 characters */
-  vsnprintf(v->err, 511, fmt, va);
+  vsnprintf(val->err, 511, fmt, va);
 
   /* Reallocate to number of bytes actually used */
-  v->err = realloc(v->err, strlen(v->err)+1);
+  val->err = realloc(val->err, strlen(val->err)+1);
 
   /* Clean up VA list */
   va_end(va);
-  return v;
+  return val;
 }
 
 lval* lval_sym(char* sym) {
-  lval* v = malloc(sizeof(lval));
-  v->type = LVAL_SYM;
-  v->sym = malloc(strlen(sym) + 1);
+  lval* val = malloc(sizeof(lval));
+  val->type = LVAL_SYM;
+  val->sym = malloc(strlen(sym) + 1);
   strcpy(v->sym, sym);
   return v;
 }
 
 lval* lval_sexpr(void) {
-  lval* v = malloc(sizeof(lval));
-  v->type = LVAL_SEXPR;
-  v->count = 0;
-  v->cell = NULL;
-  return v;
+  lval* val = malloc(sizeof(lval));
+  val->type = LVAL_SEXPR;
+  val->count = 0;
+  val->cell = NULL;
+  return val;
 }
 
 lval* lval_qexpr(void) {
-  lval* v = malloc(sizeof(lval));
-  v->type = LVAL_QEXPR;
-  v->count = 0;
-  v->cell = NULL;
-  return v;
+  lval* val = malloc(sizeof(lval));
+  val->type = LVAL_QEXPR;
+  val->count = 0;
+  val->cell = NULL;
+  return val;
 }
 
 lval* lval_fun(lbuiltin builtin) {
-  lval* v = malloc(sizeof(lval));
-  v->type = LVAL_FUN;
-  v->builtin = builtin;
-  return v;
+  lval* val = malloc(sizeof(lval));
+  val->type = LVAL_FUN;
+  val->builtin = builtin;
+  return val;
 }
 
-lval* lval_add(lval* v, lval* x) {
-  v->count++;
-  v->cell = realloc(v->cell, sizeof(lval*) * v->count);
-  v->cell[v->count-1] = x;
-  return v;
+lval* lval_add(lval* val, lval* x) {
+  val->count++;
+  val->cell = realloc(val->cell, sizeof(lval*) * val->count);
+  val->cell[val->count-1] = x;
+  return val;
 }
 
-void lval_del(lval* v) {
-  switch (v->type) {
+void lval_del(lval* val) {
+  switch (val->type) {
     /* Do nothing special for number type */
     case LVAL_NUM: break;
 
     /* For err or sym free the data */
-    case LVAL_ERR: free(v->err); break;
-    case LVAL_SYM: free(v->sym); break;
+    case LVAL_ERR: free(val->err); break;
+    case LVAL_SYM: free(val->sym); break;
     case LVAL_FUN:
-      if (!v->builtin) {
-        lenv_del(v->env);
-        lval_del(v->formals);
-        lval_del(v->body);
+      if (!val->builtin) {
+        lenv_del(val->env);
+        lval_del(val->formals);
+        lval_del(val->body);
       }
     break;
 
     /* If qexpr or sexpr then delete all elements inside */
     case LVAL_QEXPR:
     case LVAL_SEXPR:
-      for (int i = 0; i < v->count; i++) {
-        lval_del(v->cell[i]);
+      for (int i = 0; i < val->count; i++) {
+        lval_del(val->cell[i]);
       }
 
       /* Free memory allocated to store pointers */
-      free(v->cell);
+      free(val->cell);
     break;
   }
   /* Free memory allocated for the lval struct itself */
-  free(v);
+  free(val);
 }
 
-lval* lval_read_num(mpc_ast_t* t) {
+lval* lval_read_num(mpc_ast_t* tree) {
   errno = 0;
-  long x = strtol(t->contents, NULL, 10);
+  long num = strtol(tree->contents, NULL, 10);
   return errno != ERANGE ?
-    lval_num(x) : lval_err("invalid number");
+    lval_num(num) : lval_err("invalid number");
 }
 
-lval* lval_read(mpc_ast_t* t) {
+lval* lval_read(mpc_ast_t* tree) {
   /* If symbol or number return conversion to that type */
-  if (strstr(t->tag, "number")) { return lval_read_num(t); }
-  if (strstr(t->tag, "symbol")) { return lval_sym(t->contents); }
+  if (strstr(tree->tag, "number")) { return lval_read_num(tree); }
+  if (strstr(tree->tag, "symbol")) { return lval_sym(tree->contents); }
 
   /* If root (>) or sexpr then create empty list */
   lval* x = NULL;
-  if (strcmp(t->tag, ">") == 0) { x = lval_sexpr(); }
-  if (strstr(t->tag, "sexpr"))  { x = lval_sexpr(); }
-  if (strstr(t->tag, "qexpr"))  { x = lval_qexpr(); }
+  if (strcmp(tree->tag, ">") == 0) { x = lval_sexpr(); }
+  if (strstr(tree->tag, "sexpr"))  { x = lval_sexpr(); }
+  if (strstr(tree->tag, "qexpr"))  { x = lval_qexpr(); }
 
   /* Fill this list with any valid expression contained within */
-  for (int i = 0; i < t->children_num; i++) {
-    if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
-    if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
-    if (strcmp(t->children[i]->contents, "{") == 0) { continue; }
-    if (strcmp(t->children[i]->contents, "}") == 0) { continue; }
-    if (strcmp(t->children[i]->tag,  "regex") == 0) { continue; }
-    x = lval_add(x, lval_read(t->children[i]));
+  for (int i = 0; i < tree->children_num; i++) {
+    if (strcmp(tree->children[i]->contents, "(") == 0) { continue; }
+    if (strcmp(tree->children[i]->contents, ")") == 0) { continue; }
+    if (strcmp(tree->children[i]->contents, "{") == 0) { continue; }
+    if (strcmp(tree->children[i]->contents, "}") == 0) { continue; }
+    if (strcmp(tree->children[i]->tag,  "regex") == 0) { continue; }
+    x = lval_add(x, lval_read(tree->children[i]));
   }
 
   return x;
@@ -389,8 +389,8 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
 void lval_println(lval* v) { lval_print(v); putchar('\n'); }
 
 /* Return string describing passed Lval Type */
-char* ltype_name(int t) {
-  switch(t) {
+char* ltype_name(int type) {
+  switch(type) {
     case LVAL_FUN: return "Function";
     case LVAL_NUM: return "Number";
     case LVAL_ERR: return "Error";
