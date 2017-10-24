@@ -38,6 +38,7 @@ lval* lval_sym(char* sym);
 lval* lval_sexpr(void);
 lval* lval_qexpr(void);
 lval* lval_fun(lbuiltin fun);
+lval* lval_add(lval* val, lval* x);
 void lval_del(lval* val);
 lval* lval_eval_sexpr(struct lenv* env, lval* val);
 lval* lval_eval(struct lenv* env, lval* val);
