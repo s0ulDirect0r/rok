@@ -30,7 +30,7 @@ void add_history(char* unused) {}
 #include <editline/readline.h>
 #endif
 
-int main(int argc, char** argv) {
+int main() {
   /* Create some parsers */
   mpc_parser_t* Number   = mpc_new("number");
   mpc_parser_t* Symbol   = mpc_new("symbol");
@@ -54,8 +54,8 @@ int main(int argc, char** argv) {
   puts("Let's Rok!!!");
   puts("Press Ctrl-C to Exit\n");
 
-  lenv* e = lenv_new();
-  lenv_add_builtins(e);
+  lenv* env = lenv_new();
+  lenv_add_builtins(env);
 
   /* In a never ending loop */
   while (1) {
@@ -66,17 +66,17 @@ int main(int argc, char** argv) {
     add_history(input);
 
     /* Attempt to parse the user Input */
-    mpc_result_t r;
-    if (mpc_parse("<stdin>", input, Rok, &r)) {
+    mpc_result_t result;
+    if (mpc_parse("<stdin>", input, Rok, &result)) {
       /* On Success Print the AST */
-      lval* x = lval_eval(e, lval_read(r.output));
+      lval* x = lval_eval(env, lval_read(result.output));
       lval_println(x);
       lval_del(x);
-      mpc_ast_delete(r.output);
+      mpc_ast_delete(result.output);
     } else {
       /* Otherwise print the error */
-      mpc_err_print(r.error);
-      mpc_err_delete(r.error);
+      mpc_err_print(result.error);
+      mpc_err_delete(result.error);
     }
 
     /* Free retrieved input */
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
   }
 
   /* Undefine and Delete our Parsers */
-  lenv_del(e);
+  lenv_del(env);
   mpc_cleanup(6, Number, Symbol, Sexpr, Expr, Rok);
   return 0;
 }

@@ -375,13 +375,13 @@ lval* lval_call(lenv* env, lval* fun, lval* args) {
   if (fun->formals->count == 0) {
 
     /* Set environment parent to evaluation environment */
-    fun->env->parent = e;
+    fun->env->parent = env;
 
     /* Evaluate and return */
     return builtin_eval(fun->env, lval_add(lval_sexpr(), lval_copy(fun->body)));
   } else {
     /* Otherwise return partially evaluated function */
-    return lval_copy(f);
+    return lval_copy(fun);
   }
 }
 
