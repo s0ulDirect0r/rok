@@ -6,7 +6,7 @@
 lval* lval_num(long num) {
   lval* val = malloc(sizeof(lval));
   val->type = LVAL_NUM;
-  val->num = n;
+  val->num = num;
   return val;
 }
 
@@ -35,8 +35,8 @@ lval* lval_sym(char* sym) {
   lval* val = malloc(sizeof(lval));
   val->type = LVAL_SYM;
   val->sym = malloc(strlen(sym) + 1);
-  strcpy(v->sym, sym);
-  return v;
+  strcpy(val->sym, sym);
+  return val;
 }
 
 lval* lval_sexpr(void) {
@@ -270,7 +270,7 @@ lval* lval_eval_sexpr(lenv* env, lval* val) {
   if (val->count == 0) { return val; }
 
   /* Single Expression */
-  if (val->count == 1) { return lval_eval(e, lval_take(val, 0)); }
+  if (val->count == 1) { return lval_eval(env, lval_take(val, 0)); }
 
   /* Ensure First Element is a function after evaluation */
   lval* fun = lval_pop(val, 0);
