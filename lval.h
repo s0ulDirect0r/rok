@@ -17,6 +17,7 @@ struct lval {
   long num;
   char* err;
   char* sym;
+  char* bool;
 
   /* Function */
   lbuiltin builtin;
@@ -30,11 +31,12 @@ struct lval {
 };
 
 /* Declare Enumerations for lval types */
-enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN };
+enum lval_types { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN, LVAL_BOOL };
 
 lval* lval_num(long num);
 lval* lval_err(char* fmt, ...);
 lval* lval_sym(char* sym);
+lval* lval_bool(char* bool);
 lval* lval_sexpr(void);
 lval* lval_qexpr(void);
 lval* lval_fun(lbuiltin fun);
