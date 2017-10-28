@@ -40,7 +40,7 @@ lval* lval_sym(char* sym) {
 }
 
 lval* lval_bool(char* bool) {
-  lval* bool = malloc(sizeof(lval));
+  lval* val = malloc(sizeof(lval));
   val->type = LVAL_BOOL;
   val->bool = malloc(strlen(bool) + 1);
   strcpy(val->bool, bool);
