@@ -59,6 +59,13 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
     }
     if(strcmp(op, "%") == 0) { x->num %= y->num; }
     if(strcmp(op, "^") == 0) { x->num = (long)pow(x->num, y->num);}
+    if(strcmp(op, ">") == 0) {
+      if(x->num > y->num) {
+        x->bool = "true";
+      } else {
+        x->bool = "false";
+      }
+    }
     lval_del(y);
   }
 
