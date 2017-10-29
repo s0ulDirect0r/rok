@@ -85,6 +85,7 @@ void lval_del(lval* val) {
     /* For err or sym free the data */
     case LVAL_ERR: free(val->err); break;
     case LVAL_SYM: free(val->sym); break;
+    case LVAL_BOOL: free(val->bool); break;
     case LVAL_FUN:
       if (!val->builtin) {
         lenv_del(val->env);
@@ -118,6 +119,7 @@ lval* lval_read_num(mpc_ast_t* tree) {
 lval* lval_read(mpc_ast_t* tree) {
   /* If symbol or number return conversion to that type */
   if (strstr(tree->tag, "number")) { return lval_read_num(tree); }
+  if (strstr(tree->tag, "boolean")) { return lval_bool(tree->contents);}
   if (strstr(tree->tag, "symbol")) { return lval_sym(tree->contents); }
 
   /* If root (>) or sexpr then create empty list */
@@ -161,6 +163,7 @@ void lval_print(lval* val) {
     case LVAL_NUM: printf("%li", val->num); break;
     case LVAL_ERR: printf("Error: %s", val->err); break;
     case LVAL_SYM: printf("%s", val->sym); break;
+    case LVAL_BOOL: printf("%s", val->bool); break;
     case LVAL_FUN:
       if (val->builtin) {
         printf("<builtin>");
@@ -216,6 +219,7 @@ lval* lval_copy(lval* val) {
 
   switch (val->type) {
     case LVAL_NUM: x->num = val->num; break;
+    case LVAL_BOOL: x->bool = val->bool; break;
     case LVAL_FUN:
       if (val->builtin) {
         x->builtin = val->builtin;
@@ -401,6 +405,7 @@ char* ltype_name(int type) {
   switch(type) {
     case LVAL_FUN: return "Function";
     case LVAL_NUM: return "Number";
+    case LVAL_BOOL: return "Boolean";
     case LVAL_ERR: return "Error";
     case LVAL_SYM: return "Symbol";
     case LVAL_SEXPR: return "S-Expression";
