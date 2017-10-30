@@ -60,7 +60,36 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
     if(strcmp(op, "%") == 0) { x->num %= y->num; }
     if(strcmp(op, "^") == 0) { x->num = (long)pow(x->num, y->num);}
     if(strcmp(op, ">") == 0) {
+      x->type = LVAL_BOOL;
       if(x->num > y->num) {
+        x->bool = "true";
+      } else {
+        x->bool = "false";
+      }
+    }
+    if(strcmp(op, ">=") == 0) {
+      if(x->num >= y->num) {
+        x->bool = "true";
+      } else {
+        x->bool = "false";
+      }
+    }
+    if(strcmp(op, "<") == 0) {
+      if(x->num < y->num) {
+        x->bool = "true";
+      } else {
+        x->bool = "false";
+      }
+    }
+    if(strcmp(op, "<=") == 0) {
+      if(x->num <= y->num) {
+        x->bool = "true";
+      } else {
+        x->bool = "false";
+      }
+    }
+    if(strcmp(op, "==") == 0) {
+      if(x->num == y->num) {
         x->bool = "true";
       } else {
         x->bool = "false";
@@ -68,7 +97,7 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
     }
     lval_del(y);
   }
-
+  printf("%s", ltype_name(x->type));
   lval_del(args); return x;
 }
 
@@ -86,6 +115,26 @@ lval* builtin_mul(lenv* env, lval* args) {
 
 lval* builtin_div(lenv* env, lval* args) {
   return builtin_op(env, args, "/");
+}
+
+lval* builtin_greater(lenv* env, lval* args) {
+  return builtin_op(env, args, ">");
+}
+
+lval* builtin_greater_equal(lenv* env, lval* args) {
+  return builtin_op(env, args, ">=");
+}
+
+lval* builtin_less(lenv* env, lval* args) {
+  return builtin_op(env, args, "<");
+}
+
+lval* builtin_less_equal(lenv* env, lval* args) {
+  return builtin_op(env, args, "<=");
+}
+
+lval* builtin_equal(lenv* env, lval* args) {
+  return builtin_op(env, args, "==");
 }
 
 lval* builtin_head(lenv* env, lval* args) {
@@ -231,17 +280,4 @@ lval* builtin_var(lenv* env, lval* args, char* func) {
 
   lval_del(args);
   return lval_sexpr();
-}
-
-lval* builtin(lenv* env, lval* args, char* func) {
-  if(strcmp("list", func) == 0) { return builtin_list(env, args); }
-  if(strcmp("head", func) == 0) { return builtin_head(env, args); }
-  if(strcmp("tail", func) == 0) { return builtin_tail(env, args); }
-  if(strcmp("eval", func) == 0) { return builtin_eval(env, args); }
-  if(strcmp("join", func) == 0) { return builtin_join(env, args); }
-  if(strcmp("len", func) == 0) { return builtin_len(env, args); }
-  if(strcmp("def", func) == 0) { return builtin_def(env, args); }
-  if(strstr("+-/*^%", func)) { return builtin_op(env, args, func); }
-  lval_del(args);
-  return lval_err("Unknown Function!");
 }

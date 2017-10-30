@@ -44,6 +44,7 @@ lval* lval_bool(char* bool) {
   val->type = LVAL_BOOL;
   val->bool = malloc(strlen(bool) + 1);
   strcpy(val->bool, bool);
+  printf("boolean!!");
   return val;
 }
 
@@ -119,7 +120,10 @@ lval* lval_read_num(mpc_ast_t* tree) {
 lval* lval_read(mpc_ast_t* tree) {
   /* If symbol or number return conversion to that type */
   if (strstr(tree->tag, "number")) { return lval_read_num(tree); }
-  if (strstr(tree->tag, "boolean")) { return lval_bool(tree->contents);}
+  if (strstr(tree->tag, "boolean")) {
+    printf("boolean!!");
+    return lval_bool(tree->contents);
+  }
   if (strstr(tree->tag, "symbol")) { return lval_sym(tree->contents); }
 
   /* If root (>) or sexpr then create empty list */

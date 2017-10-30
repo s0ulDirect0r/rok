@@ -9,6 +9,11 @@ lval* builtin_add(struct lenv* env, lval* args);
 lval* builtin_sub(struct lenv* env, lval* args);
 lval* builtin_mul(struct lenv* env, lval* args);
 lval* builtin_div(struct lenv* env, lval* args);
+lval* builtin_greater(struct lenv* env, lval* args);
+lval* builtin_greater_equal(struct lenv* env, lval* args);
+lval* builtin_less(struct lenv* env, lval* args);
+lval* builtin_less_equal(struct lenv* env, lval* args);
+lval* builtin_equal(struct lenv* env, lval* args);
 lval* builtin_head(struct lenv* env, lval* args);
 lval* builtin_tail(struct lenv* env, lval* args);
 lval* builtin_list(struct lenv* env, lval* args);
@@ -20,6 +25,5 @@ lval* builtin_lambda(struct lenv* env, lval* args);
 lval* builtin_put(struct lenv* env, lval* args);
 lval* builtin_var(struct lenv* env, lval* args, char* func);
 lval* builtin_rok(struct lenv* env, lval* args);
-lval* builtin(struct lenv* env, lval* args, char* func);
 
 #endif
