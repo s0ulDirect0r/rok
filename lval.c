@@ -44,7 +44,6 @@ lval* lval_bool(char* bool) {
   val->type = LVAL_BOOL;
   val->bool = malloc(strlen(bool) + 1);
   strcpy(val->bool, bool);
-  printf("boolean!!");
   return val;
 }
 
@@ -82,11 +81,11 @@ void lval_del(lval* val) {
   switch (val->type) {
     /* Do nothing special for number type */
     case LVAL_NUM: break;
+    case LVAL_BOOL: break;
 
     /* For err or sym free the data */
     case LVAL_ERR: free(val->err); break;
     case LVAL_SYM: free(val->sym); break;
-    case LVAL_BOOL: free(val->bool); break;
     case LVAL_FUN:
       if (!val->builtin) {
         lenv_del(val->env);
@@ -121,7 +120,6 @@ lval* lval_read(mpc_ast_t* tree) {
   /* If symbol or number return conversion to that type */
   if (strstr(tree->tag, "number")) { return lval_read_num(tree); }
   if (strstr(tree->tag, "boolean")) {
-    printf("boolean!!");
     return lval_bool(tree->contents);
   }
   if (strstr(tree->tag, "symbol")) { return lval_sym(tree->contents); }
@@ -223,7 +221,6 @@ lval* lval_copy(lval* val) {
 
   switch (val->type) {
     case LVAL_NUM: x->num = val->num; break;
-    case LVAL_BOOL: x->bool = val->bool; break;
     case LVAL_FUN:
       if (val->builtin) {
         x->builtin = val->builtin;
@@ -237,6 +234,10 @@ lval* lval_copy(lval* val) {
     case LVAL_SYM:
       x->sym = malloc(strlen(val->sym) + 1);
       strcpy(x->sym, val->sym); break;
+    case LVAL_BOOL:
+      x->bool = malloc(strlen(val->bool) + 1);
+      strcpy(x->bool, val->bool); break;
+
     case LVAL_ERR:
       x->err = malloc(strlen(val->err) + 1);
       strcpy(x->err, val->err); break;

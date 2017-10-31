@@ -68,6 +68,7 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
       }
     }
     if(strcmp(op, ">=") == 0) {
+      x->type = LVAL_BOOL;
       if(x->num >= y->num) {
         x->bool = "true";
       } else {
@@ -75,6 +76,7 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
       }
     }
     if(strcmp(op, "<") == 0) {
+      x->type = LVAL_BOOL;
       if(x->num < y->num) {
         x->bool = "true";
       } else {
@@ -82,6 +84,7 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
       }
     }
     if(strcmp(op, "<=") == 0) {
+      x->type = LVAL_BOOL;
       if(x->num <= y->num) {
         x->bool = "true";
       } else {
@@ -89,6 +92,7 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
       }
     }
     if(strcmp(op, "==") == 0) {
+      x->type = LVAL_BOOL;
       if(x->num == y->num) {
         x->bool = "true";
       } else {
@@ -97,7 +101,6 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
     }
     lval_del(y);
   }
-  printf("%s", ltype_name(x->type));
   lval_del(args); return x;
 }
 
