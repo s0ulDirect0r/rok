@@ -120,20 +120,24 @@ lval* builtin_div(lenv* env, lval* args) {
   return builtin_op(env, args, "/");
 }
 
+lval* builtin_order(lenv* env, lval* args, char* op) {
+  return lval_new()
+}
+
 lval* builtin_greater(lenv* env, lval* args) {
-  return builtin_op(env, args, ">");
+  return builtin_order(env, args, ">");
 }
 
 lval* builtin_greater_equal(lenv* env, lval* args) {
-  return builtin_op(env, args, ">=");
+  return builtin_order(env, args, ">=");
 }
 
 lval* builtin_less(lenv* env, lval* args) {
-  return builtin_op(env, args, "<");
+  return builtin_order(env, args, "<");
 }
 
 lval* builtin_less_equal(lenv* env, lval* args) {
-  return builtin_op(env, args, "<=");
+  return builtin_order(env, args, "<=");
 }
 
 lval* builtin_equal(lenv* env, lval* args) {
