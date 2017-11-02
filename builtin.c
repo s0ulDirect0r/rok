@@ -59,46 +59,6 @@ lval* builtin_op(lenv* env, lval* args, char* op) {
     }
     if(strcmp(op, "%") == 0) { x->num %= y->num; }
     if(strcmp(op, "^") == 0) { x->num = (long)pow(x->num, y->num);}
-    if(strcmp(op, ">") == 0) {
-      x->type = LVAL_BOOL;
-      if(x->num > y->num) {
-        x->bool = "true";
-      } else {
-        x->bool = "false";
-      }
-    }
-    if(strcmp(op, ">=") == 0) {
-      x->type = LVAL_BOOL;
-      if(x->num >= y->num) {
-        x->bool = "true";
-      } else {
-        x->bool = "false";
-      }
-    }
-    if(strcmp(op, "<") == 0) {
-      x->type = LVAL_BOOL;
-      if(x->num < y->num) {
-        x->bool = "true";
-      } else {
-        x->bool = "false";
-      }
-    }
-    if(strcmp(op, "<=") == 0) {
-      x->type = LVAL_BOOL;
-      if(x->num <= y->num) {
-        x->bool = "true";
-      } else {
-        x->bool = "false";
-      }
-    }
-    if(strcmp(op, "==") == 0) {
-      x->type = LVAL_BOOL;
-      if(x->num == y->num) {
-        x->bool = "true";
-      } else {
-        x->bool = "false";
-      }
-    }
     lval_del(y);
   }
   lval_del(args); return x;
@@ -121,7 +81,43 @@ lval* builtin_div(lenv* env, lval* args) {
 }
 
 lval* builtin_order(lenv* env, lval* args, char* op) {
-  return lval_new()
+  LASSERT_NUM(op, args, 2);
+  LASSERT_TYPE(op, args, 0, LVAL_NUM);
+  LASSERT_TYPE(op, args, 1, LVAL_NUM);
+
+  char* result = malloc(strlen("false") + 1);
+
+  if(strcmp(op, ">") == 0) {
+    if(args->cell[0]->num > args->cell[1]->num) {
+      result = "true";
+    } else {
+      result = "false";
+    }
+  }
+  if(strcmp(op, ">=") == 0) {
+    if(args->cell[0]->num >= args->cell[1]->num) {
+      result = "true";
+    } else {
+      result = "false";
+    }
+  }
+  if(strcmp(op, "<") == 0) {
+    if(args->cell[0]->num < args->cell[1]->num) {
+      result = "true";
+    } else {
+      result = "false";
+    }
+  }
+  if(strcmp(op, "<=") == 0) {
+    if(args->cell[0]->num <= args->cell[1]->num) {
+      result = "true";
+    } else {
+      result = "false";
+    }
+  }
+
+  lval_del(args);
+  return lval_bool(result);
 }
 
 lval* builtin_greater(lenv* env, lval* args) {
