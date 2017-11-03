@@ -70,6 +70,74 @@ lval* lval_fun(lbuiltin builtin) {
   return val;
 }
 
+/* IN PROGRESS */
+lval* lval_eq(lval* x, lval* y) {
+  /* Different types are always unequal */
+  if (x->type != y->type) { return lval_bool("false");}
+
+
+  /* Compare based upon type */
+  switch (x->type) {
+    /* Compare Number Value */
+    case LVAL_NUM:
+      if (x->num == y->num) {
+        return lval_bool("true");
+      } else {
+        return lval_bool("false");
+      }
+    /* Compare String Values */
+    case LVAL_BOOL:
+      if (strcmp(x->bool, y->bool) == 0) {
+        return lval_bool("true");
+      } else {
+        return lval_bool("false");
+      }
+    case LVAL_SYM:
+      if (strcmp(x->sym, y->sym) == 0) {
+        return lval_bool("true");
+      } else {
+        return lval_bool("false");
+      }
+    case LVAL_ERR:
+      if (strcmp(x->err, y->err) == 0) {
+        return lval_bool("true");
+      } else {
+        return lval_bool("false");
+      }
+    /* If builtin compare, otherwise compare formals and body */
+    case LVAL_FUN:
+      if (x->builtin || y->builtin) {
+         if (x->builtin == y->builtin) {
+          return lval_bool("true");
+        } else {
+          return lval_bool("false");
+        }
+      } else {
+        lval* formal_result = lval_eq(x->formals, y->formals);
+        lval* body_result = lval_eq(x->body, y->body);
+        return lval_eq(formal_result, body_result);
+      }
+
+    /* If list compare every individual element */
+    case LVAL_QEXPR:
+    case LVAL_SEXPR:
+      if (x->count != y->count) {
+        return lval_bool("false");
+      } else {
+        for (int i = 0; i < x->count; i++) {
+          lval* result = lval_eq(x->cell[i], y->cell[i]);
+          if (strcmp(result->bool, "true") != 0) {
+            return result;
+          }
+        }
+        /* Otherwise lists must be equal */
+        return lval_bool("true");
+      }
+    break;
+  }
+  return lval_bool("false");
+}
+
 lval* lval_add(lval* val, lval* x) {
   val->count++;
   val->cell = realloc(val->cell, sizeof(lval*) * val->count);
