@@ -9,6 +9,7 @@ lval* builtin_add(struct lenv* env, lval* args);
 lval* builtin_sub(struct lenv* env, lval* args);
 lval* builtin_mul(struct lenv* env, lval* args);
 lval* builtin_div(struct lenv* env, lval* args);
+lval* builtin_order(struct lenv* env, lval* args, char* op);
 lval* builtin_greater(struct lenv* env, lval* args);
 lval* builtin_greater_equal(struct lenv* env, lval* args);
 lval* builtin_less(struct lenv* env, lval* args);
