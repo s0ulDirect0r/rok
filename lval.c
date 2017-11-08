@@ -70,7 +70,6 @@ lval* lval_fun(lbuiltin builtin) {
   return val;
 }
 
-/* IN PROGRESS */
 lval* lval_eq(lval* x, lval* y) {
   /* Different types are always unequal */
   if (x->type != y->type) { return lval_bool("false");}
