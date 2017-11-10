@@ -139,19 +139,19 @@ lval* builtin_less_equal(lenv* env, lval* args) {
 lval* builtin_compare(lenv* env, lval* args, char* op) {
   LASSERT_NUM(op, args, 2);
   if (strcmp(op, "==") == 0) {
+    lval_del(args);
     return lval_eq(args->cell[0], args->cell[1]);
   }
 
   if (strcmp(op, "!=") == 0) {
     lval* result = lval_eq(args->cell[0], args->cell[1]);
+    lval_del(args);
     if (strcmp(result->bool, "true") == 0) {
       return lval_bool("false");
     } else {
       return lval_bool("true");
     }
   }
-
-  lval_del(args);
 }
 
 lval* builtin_equal(lenv* env, lval* args) {
