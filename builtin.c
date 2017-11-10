@@ -152,10 +152,15 @@ lval* builtin_compare(lenv* env, lval* args, char* op) {
       return lval_bool("true");
     }
   }
+  return lval_err("Something went wrong with compare");
 }
 
 lval* builtin_equal(lenv* env, lval* args) {
-  return builtin_op(env, args, "==");
+  return builtin_compare(env, args, "==");
+}
+
+lval* builtin_not_equal(lenv* env, lval* args) {
+  return builtin_compare(env, args, "!=");
 }
 
 lval* builtin_head(lenv* env, lval* args) {
