@@ -107,6 +107,8 @@ void lenv_add_builtins(lenv* env) {
   lenv_add_builtin(env, "<", builtin_less);
   lenv_add_builtin(env, "<=", builtin_less_equal);
   lenv_add_builtin(env, "==", builtin_equal);
+  lenv_add_builtin(env, "!=", builtin_not_equal);
+  lenv_add_builtin(env, "if", builtin_if);
 
   /* Variable functions */
   lenv_add_builtin(env, "def", builtin_def);

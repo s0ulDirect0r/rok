@@ -163,6 +163,29 @@ lval* builtin_not_equal(lenv* env, lval* args) {
   return builtin_compare(env, args, "!=");
 }
 
+lval* builtin_if(lenv* env, lval* args) {
+  LASSERT_NUM("if", args, 3);
+  LASSERT_TYPE("if", args, 0, LVAL_NUM);
+  LASSERT_TYPE("if", args, 1, LVAL_QEXPR);
+  LASSERT_TYPE("if", args, 2, LVAL_SEXPR);
+
+  /* Mark both expressions as evaluable */
+  lval* result;
+  args->cell[1]->type = LVAL_SEXPR;
+  args->cell[2]->type = LVAL_SEXPR;
+
+  /* TO DO */
+  if(strcmp(args->cell[0]->bool, "true") == 0) {
+    /* If condition evaluates true evaluate first expression */
+    result = lval_eval(env, lval_pop(args, 1));
+  } else {
+    /* Otherwise eval second expression */
+    result = lval_eval(env, lval_pop(args, 2));
+  }
+  lval_del(args);
+  return result;
+}
+
 lval* builtin_head(lenv* env, lval* args) {
   /* Check Error Conditions */
   int count = 1;

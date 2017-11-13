@@ -15,6 +15,8 @@ lval* builtin_greater_equal(struct lenv* env, lval* args);
 lval* builtin_less(struct lenv* env, lval* args);
 lval* builtin_less_equal(struct lenv* env, lval* args);
 lval* builtin_equal(struct lenv* env, lval* args);
+lval* builtin_not_equal(struct lenv* env, lval* args);
+lval* builtin_if(struct lenv* env, lval* args);
 lval* builtin_head(struct lenv* env, lval* args);
 lval* builtin_tail(struct lenv* env, lval* args);
 lval* builtin_list(struct lenv* env, lval* args);
