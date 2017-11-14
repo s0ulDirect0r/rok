@@ -170,7 +170,7 @@ lval* builtin_if(lenv* env, lval* args) {
   LASSERT_NUM("if", args, 3);
   LASSERT_TYPE("if", args, 0, LVAL_NUM);
   LASSERT_TYPE("if", args, 1, LVAL_QEXPR);
-  LASSERT_TYPE("if", args, 2, LVAL_SEXPR);
+  LASSERT_TYPE("if", args, 2, LVAL_QEXPR);
 
   /* Mark both expressions as evaluable */
   lval* result;
