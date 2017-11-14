@@ -138,9 +138,12 @@ lval* builtin_less_equal(lenv* env, lval* args) {
 
 lval* builtin_compare(lenv* env, lval* args, char* op) {
   LASSERT_NUM(op, args, 2);
+  lval* result;
+
   if (strcmp(op, "==") == 0) {
+    result = lval_eq(args->cell[0], args->cell[1]);
     lval_del(args);
-    return lval_eq(args->cell[0], args->cell[1]);
+    return result;
   }
 
   if (strcmp(op, "!=") == 0) {
