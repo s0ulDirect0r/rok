@@ -11,8 +11,8 @@
 
 #define LASSERT_TYPE(func, args, index, expect) \
   LASSERT(args, args->cell[index]->type == expect, \
-    "Function '%s' passed incorrect number of arguments. " \
-    "Got %i, Expected %i.", \
+    "Function '%s' passed incorrect type for argument %i. " \
+    "Got %s, Expected %s.", \
     func, index, ltype_name(args->cell[index]->type), ltype_name(expect))
 
 #define LASSERT_NUM(func, args, num) \
@@ -168,7 +168,7 @@ lval* builtin_not_equal(lenv* env, lval* args) {
 
 lval* builtin_if(lenv* env, lval* args) {
   LASSERT_NUM("if", args, 3);
-  LASSERT_TYPE("if", args, 0, LVAL_NUM);
+  LASSERT_TYPE("if", args, 0, LVAL_BOOL);
   LASSERT_TYPE("if", args, 1, LVAL_QEXPR);
   LASSERT_TYPE("if", args, 2, LVAL_QEXPR);
 
@@ -177,8 +177,7 @@ lval* builtin_if(lenv* env, lval* args) {
   args->cell[1]->type = LVAL_SEXPR;
   args->cell[2]->type = LVAL_SEXPR;
 
-  /* TO DO */
-  if(strcmp(args->cell[0]->bool, "true") == 0) {
+  if (strcmp(args->cell[0]->bool, "true") == 0) {
     /* If condition evaluates true evaluate first expression */
     result = lval_eval(env, lval_pop(args, 1));
   } else {
