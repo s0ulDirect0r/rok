@@ -47,6 +47,14 @@ lval* lval_bool(char* bool) {
   return val;
 }
 
+lval* lval_str(char* str) {
+  lval* val = malloc(sizeof(lval));
+  val->type = LVAL_STR;
+  val->str = malloc(strlen(str) + 1);
+  strcpy(val->str, str);
+  return val;
+}
+
 lval* lval_sexpr(void) {
   lval* val = malloc(sizeof(lval));
   val->type = LVAL_SEXPR;
