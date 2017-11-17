@@ -51,6 +51,7 @@ lval* lval_read_num(mpc_ast_t* tree);
 lval* lval_read(mpc_ast_t* tree);
 void lval_expr_print(lval* val, char open, char close);
 void lval_print(lval* val);
+void lval_print_str(lval* val);
 lval* lval_pop(lval* val, int index);
 lval* lval_take(lval* val, int index);
 lval* lval_join(lval* x, lval* y);

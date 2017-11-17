@@ -105,6 +105,12 @@ lval* lval_eq(lval* x, lval* y) {
       } else {
         return lval_bool("false");
       }
+    case LVAL_STR:
+      if (strcmp(x->str, y->str) == 0) {
+        return lval_bool("true");
+      } else {
+        return lval_bool("false");
+      }
     case LVAL_ERR:
       if (strcmp(x->err, y->err) == 0) {
         return lval_bool("true");
@@ -161,6 +167,7 @@ void lval_del(lval* val) {
     /* For err or sym free the data */
     case LVAL_ERR: free(val->err); break;
     case LVAL_SYM: free(val->sym); break;
+    case LVAL_STR: free(val->str); break;
     case LVAL_FUN:
       if (!val->builtin) {
         lenv_del(val->env);
@@ -240,6 +247,7 @@ void lval_print(lval* val) {
     case LVAL_NUM: printf("%li", val->num); break;
     case LVAL_ERR: printf("Error: %s", val->err); break;
     case LVAL_SYM: printf("%s", val->sym); break;
+    case LVAL_STR: lval_print_str(val); break;
     case LVAL_BOOL: printf("%s", val->bool); break;
     case LVAL_FUN:
       if (val->builtin) {
@@ -253,6 +261,15 @@ void lval_print(lval* val) {
     case LVAL_QEXPR: lval_expr_print(val, '{', '}'); break;
     break;
   }
+}
+
+/* Print a lval string */
+void lval_print_str(lval* val) {
+  char* escaped = malloc(strlen(val->str) + 1);
+  strcpy(escaped, val->str);
+  escaped = mpcf_escape(escaped);
+  printf("\"%s\"", escaped);
+  free(escaped);
 }
 
 lval* lval_pop(lval* val, int i) {
@@ -309,6 +326,9 @@ lval* lval_copy(lval* val) {
     case LVAL_SYM:
       x->sym = malloc(strlen(val->sym) + 1);
       strcpy(x->sym, val->sym); break;
+    case LVAL_STR:
+      x->str = malloc(strlen(val->str) + 1);
+      strcpy(x->str, val->str); break;
     case LVAL_BOOL:
       x->bool = malloc(strlen(val->bool) + 1);
       strcpy(x->bool, val->bool); break;
@@ -488,6 +508,7 @@ char* ltype_name(int type) {
     case LVAL_BOOL: return "Boolean";
     case LVAL_ERR: return "Error";
     case LVAL_SYM: return "Symbol";
+    case LVAL_STR: return "String";
     case LVAL_SEXPR: return "S-Expression";
     case LVAL_QEXPR: return "Q-Expression";
     default: return "Unknown";
