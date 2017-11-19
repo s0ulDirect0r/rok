@@ -49,7 +49,7 @@ int main() {
     " string   : /\"(\\\\.|[^\"])*\"/ ;                    "
     " sexpr    : '(' <expr>* ')' ;                         "
     " qexpr    : '{' <expr>* '}' ;                         "
-    " expr     : <number> | <symbol> | <sexpr> | <qexpr> ; "
+    " expr     : <number> | <boolean> |<symbol> | <string> | <sexpr> | <qexpr> ; "
     " rok      : /^/ <expr>* /$/ ;                         ",
     Number, Boolean, Symbol, String, Sexpr, Qexpr, Expr, Rok);
 

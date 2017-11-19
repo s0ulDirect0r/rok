@@ -49,6 +49,7 @@ lval* lval_eval(struct lenv* env, lval* val);
 void lval_println(lval* val);
 lval* lval_read_num(mpc_ast_t* tree);
 lval* lval_read(mpc_ast_t* tree);
+lval* lval_read_str(mpc_ast_t* tree);
 void lval_expr_print(lval* val, char open, char close);
 void lval_print(lval* val);
 void lval_print_str(lval* val);

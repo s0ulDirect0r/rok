@@ -198,6 +198,16 @@ lval* lval_read_num(mpc_ast_t* tree) {
     lval_num(num) : lval_err("invalid number");
 }
 
+lval* lval_read_str(mpc_ast_t* tree) {
+  tree->contents[strlen(tree->contents)-1] = '\0';
+  char* unescaped = malloc(strlen(tree->contents+1)+1);
+  strcpy(unescaped, tree->contents+1);
+  unescaped = mpcf_unescape(unescaped);
+  lval* str = lval_str(unescaped);
+  free(unescaped);
+  return str;
+}
+
 lval* lval_read(mpc_ast_t* tree) {
   /* If symbol or number return conversion to that type */
   if (strstr(tree->tag, "number")) { return lval_read_num(tree); }
@@ -205,6 +215,8 @@ lval* lval_read(mpc_ast_t* tree) {
     return lval_bool(tree->contents);
   }
   if (strstr(tree->tag, "symbol")) { return lval_sym(tree->contents); }
+
+  if (strstr(tree->tag, "string")) { return lval_read_str(tree); }
 
   /* If root (>) or sexpr then create empty list */
   lval* x = NULL;
@@ -265,7 +277,7 @@ void lval_print(lval* val) {
 
 /* Print a lval string */
 void lval_print_str(lval* val) {
-  char* escaped = malloc(strlen(val->str) + 1);
+  char* escaped = malloc(strlen(val->str)+1);
   strcpy(escaped, val->str);
   escaped = mpcf_escape(escaped);
   printf("\"%s\"", escaped);
