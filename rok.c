@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     " sexpr    : '(' <expr>* ')' ;                         "
     " qexpr    : '{' <expr>* '}' ;                         "
     " expr     : <number> | <boolean> | <symbol> |         \
-                 <string> | <sexpr> | <qexpr> ;            "
+                 <string> | <comment> | <sexpr> | <qexpr> ;"
     " rok      : /^/ <expr>* /$/ ;                         ",
     Number, Boolean, Symbol, String, Comment, Sexpr, Qexpr, Expr, Rok);
 
