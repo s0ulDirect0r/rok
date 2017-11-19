@@ -31,6 +31,13 @@ void add_history(char* unused) {}
 #include <editline/readline.h>
 #endif
 
+char* check_filename_ext(char* filename) {
+  char* dot = strchr(filename, '.');
+  if (!dot || dot == filename) return "Wrong file type. Please use .rok extension.";
+  if (strcmp(dot + 1, "rok") == 0) return "OK";
+  return "Wrong file type. Please use .rok extension.";
+}
+
 int main(int argc, char** argv) {
   /* Create some parsers */
   Number   = mpc_new("number");
@@ -97,6 +104,13 @@ int main(int argc, char** argv) {
   if (argc >= 2) {
     for (int i = 1; i < argc; i++) {
       /* Take filename and translate to lvals */
+      char* check = check_filename_ext(argv[i]);
+      if (strcmp(check, "OK") != 0) {
+        lval* err = lval_err(check);
+        lval_println(err);
+        lval_del(err);
+        return 0;
+      }
       lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
 
       /* Load and get result */
