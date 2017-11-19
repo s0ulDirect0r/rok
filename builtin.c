@@ -1,6 +1,7 @@
 #include "builtin.h"
 #include "lenv.h"
 #include "lval.h"
+#include "rok.h"
 
 #define LASSERT(args, cond, fmt, ...) \
   if (!(cond)) { \
@@ -331,4 +332,43 @@ lval* builtin_var(lenv* env, lval* args, char* func) {
 
   lval_del(args);
   return lval_sexpr();
+}
+
+lval* builtin_load(lenv* env, lval* args) {
+  LASSERT_NUM("load", args, 1);
+  LASSERT_TYPE("load", args, 0, LVAL_STR);
+
+  /* Parse file given by string name */
+  mpc_result_t result;
+  if (mpc_parse_contents(args->cell[0]->str, Rok, &result)) {
+    /* Read contents */
+    lval* expr = lval_read(result.output);
+    mpc_ast_delete(result.output);
+
+    /* Evaluate each expression */
+    while (expr->count) {
+      lval* x = lval_eval(env, lval_pop(expr, 0));
+      if (x->type == LVAL_ERR) { lval_println(x); }
+      lval_del(x);
+    }
+
+    /* Delete expressions and arguments */
+    lval_del(expr);
+    lval_del(args);
+
+    /* Return empty list */
+    return lval_sexpr();
+  } else {
+    /* Get Parse Error as String */
+    char* err_msg = mpc_err_string(result.error);
+    mpc_err_delete(result.error);
+
+    /* Create new error with err message */
+    lval* err = lval_err("Could not get Library %s", err_msg);
+
+    /* Clean up and return err */
+    free(err_msg);
+    lval_del(args);
+    return err;
+  }
 }

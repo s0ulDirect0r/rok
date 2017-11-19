@@ -218,8 +218,6 @@ lval* lval_read(mpc_ast_t* tree) {
 
   if (strstr(tree->tag, "string")) { return lval_read_str(tree); }
 
-  if (strstr(tree->tag, "comment")) { continue; }
-
   /* If root (>) or sexpr then create empty list */
   lval* x = NULL;
   if (strcmp(tree->tag, ">") == 0) { x = lval_sexpr(); }
@@ -233,6 +231,7 @@ lval* lval_read(mpc_ast_t* tree) {
     if (strcmp(tree->children[i]->contents, "{") == 0) { continue; }
     if (strcmp(tree->children[i]->contents, "}") == 0) { continue; }
     if (strcmp(tree->children[i]->tag,  "regex") == 0) { continue; }
+    if (strstr(tree->children[i]->tag, "comment")) { continue; }
     x = lval_add(x, lval_read(tree->children[i]));
   }
 
