@@ -116,4 +116,9 @@ void lenv_add_builtins(lenv* env) {
 
   /* Lambda functions */
   lenv_add_builtin(env, "\\", builtin_lambda);
+
+  /* File system functions */
+  lenv_add_builtin(env, "load", builtin_load);
+  lenv_add_builtin(env, "print", builtin_print);
+  lenv_add_builtin(env, "error", builtin_error);
 }

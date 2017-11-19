@@ -344,7 +344,6 @@ lval* builtin_load(lenv* env, lval* args) {
     /* Read contents */
     lval* expr = lval_read(result.output);
     mpc_ast_delete(result.output);
-
     /* Evaluate each expression */
     while (expr->count) {
       lval* x = lval_eval(env, lval_pop(expr, 0));
@@ -371,4 +370,27 @@ lval* builtin_load(lenv* env, lval* args) {
     lval_del(args);
     return err;
   }
+}
+
+lval* builtin_print(lenv* env, lval* args) {
+  for (int i = 0; i < args->count; i++) {
+    lval_print(args->cell[i]); putchar(' ');
+  }
+
+  /* print a new line and delete arguments */
+  putchar('\n');
+  lval_del(args);
+
+  return lval_sexpr();
+}
+
+lval* builtin_error(lenv* env, lval* args) {
+  LASSERT_NUM("error", args, 1);
+  LASSERT_TYPE("error", args, 0, LVAL_STR);
+
+  /* Construct error from first argument */
+  lval* err = lval_err(args->cell[0]->str);
+
+  lval_del(args);
+  return err;
 }

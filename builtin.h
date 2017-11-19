@@ -28,5 +28,8 @@ lval* builtin_lambda(struct lenv* env, lval* args);
 lval* builtin_put(struct lenv* env, lval* args);
 lval* builtin_var(struct lenv* env, lval* args, char* func);
 lval* builtin_rok(struct lenv* env, lval* args);
+lval* builtin_load(struct lenv* env, lval* args);
+lval* builtin_print(struct lenv* env, lval* args);
+lval* builtin_error(struct lenv* env, lval* args);
 
 #endif

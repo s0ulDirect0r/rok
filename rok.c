@@ -31,7 +31,7 @@ void add_history(char* unused) {}
 #include <editline/readline.h>
 #endif
 
-int main() {
+int main(int argc, char** argv) {
   /* Create some parsers */
   Number   = mpc_new("number");
   Boolean  = mpc_new("boolean");
@@ -57,38 +57,54 @@ int main() {
     " rok      : /^/ <expr>* /$/ ;                         ",
     Number, Boolean, Symbol, String, Comment, Sexpr, Qexpr, Expr, Rok);
 
-  /* Print version and exit information */
-  puts("Rok Version 0.0.0.0.12");
-  puts("Let's Rok!!!");
-  puts("Press Ctrl-C to Exit\n");
-
   lenv* env = lenv_new();
   lenv_add_builtins(env);
 
-  /* In a never ending loop */
-  while (1) {
-    /* Output our prompt and get input */
-    char* input = readline("rok> ");
+  if (argc == 1) {
 
-    /* Add input to history */
-    add_history(input);
+      /* Print version and exit information */
+      puts("Rok Version 0.0.1");
+      puts("Let's Rok!!!");
+      puts("Press Ctrl-C to Exit\n");
 
-    /* Attempt to parse the user Input */
-    mpc_result_t result;
-    if (mpc_parse("<stdin>", input, Rok, &result)) {
-      /* On Success Print the AST */
-      lval* x = lval_eval(env, lval_read(result.output));
-      lval_println(x);
+      /* In a never ending loop */
+      while (1) {
+        /* Output our prompt and get input */
+        char* input = readline("rok> ");
+
+        /* Add input to history */
+        add_history(input);
+
+        /* Attempt to parse the user Input */
+        mpc_result_t result;
+        if (mpc_parse("<stdin>", input, Rok, &result)) {
+          /* On Success Print the AST */
+          lval* x = lval_eval(env, lval_read(result.output));
+          lval_println(x);
+          lval_del(x);
+          mpc_ast_delete(result.output);
+        } else {
+          /* Otherwise print the error */
+          mpc_err_print(result.error);
+          mpc_err_delete(result.error);
+        }
+
+        /* Free retrieved input */
+        free(input);
+      }
+  }
+
+  if (argc >= 2) {
+    for (int i = 1; i < argc; i++) {
+      /* Take filename and translate to lvals */
+      lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
+
+      /* Load and get result */
+      lval* x = builtin_load(env, args);
+      /* If the result is an error print it */
+      if (x->type == LVAL_ERR) { lval_println(x); }
       lval_del(x);
-      mpc_ast_delete(result.output);
-    } else {
-      /* Otherwise print the error */
-      mpc_err_print(result.error);
-      mpc_err_delete(result.error);
     }
-
-    /* Free retrieved input */
-    free(input);
   }
 
   /* Undefine and Delete our Parsers */
