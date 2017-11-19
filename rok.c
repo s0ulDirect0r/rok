@@ -117,8 +117,13 @@ int main(int argc, char** argv) {
       }
       lval* args = lval_add(lval_sexpr(), lval_str(argv[i]));
 
+      lval* standard = lval_add(lval_sexpr(), lval_str("standard.rok"));
+      lval* load = builtin_load(env, standard);
+      lval_del(load);
+
       /* Load and get result */
       lval* x = builtin_load(env, args);
+
       /* If the result is an error print it */
       if (x->type == LVAL_ERR) { lval_println(x); }
       lval_del(x);
