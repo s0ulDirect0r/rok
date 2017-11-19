@@ -74,6 +74,10 @@ int main(int argc, char** argv) {
       puts("Let's Rok!!!");
       puts("Press Ctrl-C to Exit\n");
 
+      lval* standard = lval_add(lval_sexpr(), lval_str("standard.rok"));
+      lval* load = builtin_load(env, standard);
+      lval_del(load);
+      puts("Standard library loaded.\n");
       /* In a never ending loop */
       while (1) {
         /* Output our prompt and get input */
