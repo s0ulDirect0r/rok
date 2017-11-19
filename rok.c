@@ -36,6 +36,7 @@ int main() {
   mpc_parser_t* Boolean  = mpc_new("boolean");
   mpc_parser_t* Symbol   = mpc_new("symbol");
   mpc_parser_t* String   = mpc_new("string");
+  mpc_parser_t* Comment  = mpc_new("comment");
   mpc_parser_t* Sexpr    = mpc_new("sexpr");
   mpc_parser_t* Qexpr    = mpc_new("qexpr");
   mpc_parser_t* Expr     = mpc_new("expr");
@@ -47,12 +48,13 @@ int main() {
     " boolean  : /true|false/ ;                            "
     " symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ;        "
     " string   : /\"(\\\\.|[^\"])*\"/ ;                    "
+    " comment  : /;[^\\r\\n]*/ ;                           "
     " sexpr    : '(' <expr>* ')' ;                         "
     " qexpr    : '{' <expr>* '}' ;                         "
     " expr     : <number> | <boolean> | <symbol> |         \
                  <string> | <sexpr> | <qexpr> ;            "
     " rok      : /^/ <expr>* /$/ ;                         ",
-    Number, Boolean, Symbol, String, Sexpr, Qexpr, Expr, Rok);
+    Number, Boolean, Symbol, String, Comment, Sexpr, Qexpr, Expr, Rok);
 
   /* Print version and exit information */
   puts("Rok Version 0.0.0.0.12");
@@ -90,6 +92,6 @@ int main() {
 
   /* Undefine and Delete our Parsers */
   lenv_del(env);
-  mpc_cleanup(7, Number, Boolean, Symbol, String, Sexpr, Expr, Rok);
+  mpc_cleanup(9, Number, Boolean, Symbol, String, Comment, Sexpr, Qexpr, Expr, Rok);
   return 0;
 }

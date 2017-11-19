@@ -218,6 +218,8 @@ lval* lval_read(mpc_ast_t* tree) {
 
   if (strstr(tree->tag, "string")) { return lval_read_str(tree); }
 
+  if (strstr(tree->tag, "comment")) { continue; }
+
   /* If root (>) or sexpr then create empty list */
   lval* x = NULL;
   if (strcmp(tree->tag, ">") == 0) { x = lval_sexpr(); }
