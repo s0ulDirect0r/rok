@@ -3,6 +3,7 @@
 
 #include "mpc.h"
 
+/* Parser Declarations */
 mpc_parser_t* Number;
 mpc_parser_t* Boolean;
 mpc_parser_t* Symbol;
