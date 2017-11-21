@@ -8,8 +8,8 @@ Worked through www.buildyourownlisp.com to learn about how programming languages
 1. Clone the repo
 2. Run `make rok` in the root of the repo.
 2a. Feel free to add the `rok` binary to your PATH or create a symlink to run it without the dot.
-3. Run `./rok` to open the REPL
-4. Run `./rok <filename>` to run a `.rok` script
+3. Run `rok` to open the REPL
+4. Run `rok <filename>` to run a `.rok` script
 
 
 # Your First Rok Script
