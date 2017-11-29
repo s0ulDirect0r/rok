@@ -100,6 +100,7 @@ void lenv_add_builtins(lenv* env) {
   lenv_add_builtin(env, "-", builtin_sub);
   lenv_add_builtin(env, "*", builtin_mul);
   lenv_add_builtin(env, "/", builtin_div);
+  lenv_add_builtin(env, "%", builtin_mod);
 
   /* Comparison functions */
   lenv_add_builtin(env, ">", builtin_greater);

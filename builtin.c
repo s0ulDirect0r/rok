@@ -81,6 +81,10 @@ lval* builtin_div(lenv* env, lval* args) {
   return builtin_op(env, args, "/");
 }
 
+lval* builtin_mod(lenv* env, lval* args) {
+  return builtin_op(env, args, "%");
+}
+
 lval* builtin_order(lenv* env, lval* args, char* op) {
   LASSERT_NUM(op, args, 2);
   LASSERT_TYPE(op, args, 0, LVAL_NUM);
